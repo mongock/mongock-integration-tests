@@ -6,21 +6,31 @@ import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client
 import com.github.cloudyrock.spring.v5.MongockSpring5;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.testcontainers.containers.GenericContainer;
 
-public class SpringApplicationITest extends IndependentDbIntegrationTestBase {
+public class SpringApplicationITest {
+
+    protected static final String MONGO_CONTAINER = "mongo:4.2.0";
+    protected static final Integer MONGO_PORT = 27017;
+    protected static final String DEFAULT_DATABASE_NAME = "mongocktest";
+
+    @ClassRule
+    public static GenericContainer mongo = new GenericContainer(MONGO_CONTAINER).withExposedPorts(MONGO_PORT);
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
-    private ConfigurableApplicationContext ctx;
+    private static ConfigurableApplicationContext ctx;
 
-    @Before
-    public void setUpApplication() {
+    @BeforeClass
+    public static void setUpApplication() {
 
         ctx = Mongock4Spring5SpringData3App.getSpringAppBuilder()
                 .properties(
