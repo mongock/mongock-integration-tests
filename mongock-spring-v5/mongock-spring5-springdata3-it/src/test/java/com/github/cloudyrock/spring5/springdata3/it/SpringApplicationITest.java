@@ -17,9 +17,9 @@ import org.testcontainers.containers.GenericContainer;
 
 public class SpringApplicationITest {
 
-    protected static final String MONGO_CONTAINER = "mongo:4.2.0";
-    protected static final Integer MONGO_PORT = 27017;
-    protected static final String DEFAULT_DATABASE_NAME = "mongocktest";
+    private static final String MONGO_CONTAINER = "mongo:4.2.0";
+    private static final Integer MONGO_PORT = 27017;
+    private static final String DEFAULT_DATABASE_NAME = "mongocktest";
 
     @ClassRule
     public static GenericContainer mongo = new GenericContainer(MONGO_CONTAINER).withExposedPorts(MONGO_PORT);
