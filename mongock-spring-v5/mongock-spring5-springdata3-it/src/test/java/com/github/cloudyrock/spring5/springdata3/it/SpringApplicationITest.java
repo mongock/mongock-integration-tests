@@ -3,36 +3,32 @@ package com.github.cloudyrock.spring5.springdata3.it;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.Mongock4Spring5SpringData3App;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.ClientChangeLog;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client.ClientRepository;
-import com.github.cloudyrock.spring.v5.MongockSpring5;
+
 import static org.awaitility.Awaitility.await;
+
+import com.github.cloudyrock.spring.v5.MongockSpring5;
 import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Testcontainers
-class SpringApplicationITest extends NotSharedMongoContainerTestBase {
+// TODO add enum for mongo versions
+// TODO add methodSources to automatize parametrization
 
+@Testcontainers
+class SpringApplicationITest  extends RestarterdMongoContainerTestBase{
 
     private ConfigurableApplicationContext ctx;
 
-    @BeforeEach
-    void setUpApplication() {
-
-        ctx = Mongock4Spring5SpringData3App.getSpringAppBuilder()
-                .properties(
-                        "server.port=0",// random port
-                        "spring.data.mongodb.uri=" + String.format("mongodb://%s:%d", mongo.getContainerIpAddress(), mongo.getFirstMappedPort()),
-                        "spring.data.mongodb.database=" + DEFAULT_DATABASE_NAME
-                ).run();
-    }
 
     @AfterEach
     void closingSpringApp() {
@@ -43,18 +39,26 @@ class SpringApplicationITest extends NotSharedMongoContainerTestBase {
                 .until(()-> !ctx.isActive());
     }
 
-    @Test
-    void SpringApplicationShouldRunChangeLogs() {
+    @ParameterizedTest
+    @ValueSource(strings = {"mongo:4.2.0", "mongo:3.6.3"})
+    void SpringApplicationShouldRunChangeLogs(String mongoVersion) {
+        startSpringAppWithMongoVersion(mongoVersion);
         assertEquals(ClientChangeLog.INITIAL_CLIENTS, ctx.getBean(ClientRepository.class).count());
     }
 
-    @Test
-    void ApplicationRunnerShouldBeInjected() {
+
+    @ParameterizedTest
+    @ValueSource(strings = {"mongo:4.2.0", "mongo:3.6.3"})
+    void ApplicationRunnerShouldBeInjected(String mongoVersion) {
+        startSpringAppWithMongoVersion(mongoVersion);
         ctx.getBean(MongockSpring5.MongockApplicationRunner.class);
     }
 
-    @Test
-    void InitializingBeanShouldNotBeInjected() {
+
+    @ParameterizedTest
+    @ValueSource(strings = {"mongo:4.2.0", "mongo:3.6.3"})
+    void InitializingBeanShouldNotBeInjected(String mongoVersion) {
+        startSpringAppWithMongoVersion(mongoVersion);
         Exception ex = assertThrows(
                 NoSuchBeanDefinitionException.class,
                 () -> ctx.getBean(MongockSpring5.MongockInitializingBeanRunner.class),
@@ -63,5 +67,17 @@ class SpringApplicationITest extends NotSharedMongoContainerTestBase {
                 "No qualifying bean of type 'com.github.cloudyrock.spring.v5.MongockSpring5$MongockInitializingBeanRunner' available",
                 ex.getMessage()
         );
+    }
+
+
+
+    private void startSpringAppWithMongoVersion(String mongoVersion) {
+        GenericContainer container = startMongoContainer(mongoVersion);
+        ctx = Mongock4Spring5SpringData3App.getSpringAppBuilder()
+                .properties(
+                        "server.port=0",// random port
+                        "spring.data.mongodb.uri=" + String.format("mongodb://%s:%d", container.getContainerIpAddress(), container.getFirstMappedPort()),
+                        "spring.data.mongodb.database=" + DEFAULT_DATABASE_NAME
+                ).run();
     }
 }
