@@ -1,29 +1,5 @@
 package com.github.cloudyrock.spring5.springdata3.it;
 
-import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.SpringDataMongo3Driver;
-import com.github.cloudyrock.spring.v5.MongockSpring5;
-import com.github.cloudyrock.spring5.springdata3.it.changelogs.general.AnotherMongockTestResource;
-import com.github.cloudyrock.spring5.springdata3.it.changelogs.general.MongockTestResource;
-import com.github.cloudyrock.spring5.springdata3.it.changelogs.withChangockAnnotations.ChangeLogwithChangockAnnotations;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import org.bson.Document;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
-import org.springframework.data.mongodb.core.MongoTemplate;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
 
 
 
@@ -34,11 +10,33 @@ import static org.junit.Assert.assertEquals;
 // - 4.2.X with transactions in sharded collections
 
 
+import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.SpringDataMongo3Driver;
+import com.github.cloudyrock.spring.v5.MongockSpring5;
+import com.github.cloudyrock.spring5.springdata3.it.changelogs.general.AnotherMongockTestResource;
+import com.github.cloudyrock.spring5.springdata3.it.changelogs.general.MongockTestResource;
+import com.github.cloudyrock.spring5.springdata3.it.changelogs.withChangockAnnotations.ChangeLogwithChangockAnnotations;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import org.bson.Document;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ApplicationRunnerITest extends IndependentDbIntegrationTestBase {
+@Testcontainers
+class ApplicationRunnerITest extends NotSharedMongoContainerTestBase {
+
 
   private static final String CHANGELOG_COLLECTION_NAME = "mongockChangeLog";
   private static final String TEST_RESOURCE_CLASSPATH = MongockTestResource.class.getPackage().getName();
@@ -46,15 +44,16 @@ public class ApplicationRunnerITest extends IndependentDbIntegrationTestBase {
   private MongoClient mongoClient;
   private MongoTemplate mongoTemplate;
 
-  @Before
-  public void before() {
+
+  @BeforeEach
+  void before() {
     String connectionString = String.format("mongodb://%s:%d", mongo.getContainerIpAddress(), mongo.getFirstMappedPort());
     mongoClient = MongoClients.create(connectionString);
     mongoTemplate = new MongoTemplate(mongoClient, DEFAULT_DATABASE_NAME);
   }
 
   @Test
-  public void shouldBuildInitializingBeanRunner() {
+  void shouldBuildInitializingBeanRunner() {
     // given
     assertEquals(
         MongockSpring5.MongockApplicationRunner.class,
@@ -62,7 +61,7 @@ public class ApplicationRunnerITest extends IndependentDbIntegrationTestBase {
   }
 
   @Test
-  public void shouldBuildApplicationRunner() {
+  void shouldBuildApplicationRunner() {
     // given
     assertEquals(
         MongockSpring5.MongockInitializingBeanRunner.class,
@@ -70,7 +69,7 @@ public class ApplicationRunnerITest extends IndependentDbIntegrationTestBase {
   }
 
   @Test
-  public void shouldExecuteAllChangeSets() {
+  void shouldExecuteAllChangeSets() {
     // given, then
     getBasicBuilder(TEST_RESOURCE_CLASSPATH).buildApplicationRunner().execute();
 
@@ -81,7 +80,7 @@ public class ApplicationRunnerITest extends IndependentDbIntegrationTestBase {
   }
 
   @Test
-  public void shouldStoreMetadata_WhenChangeSetIsTrack_IfAddedInBuilder() {
+  void shouldStoreMetadata_WhenChangeSetIsTrack_IfAddedInBuilder() {
     // given
     Map<String, Object> metadata = new HashMap<>();
     metadata.put("string_key", "string_value");
@@ -109,7 +108,7 @@ public class ApplicationRunnerITest extends IndependentDbIntegrationTestBase {
   }
 
   @Test
-  public void shouldTwoExecutedChangeSet_whenRunningTwice_ifRunAlways() {
+  void shouldTwoExecutedChangeSet_whenRunningTwice_ifRunAlways() {
     // given
     MongockSpring5.MongockApplicationRunner runner = getBasicBuilder(TEST_RESOURCE_CLASSPATH).buildApplicationRunner();
 
@@ -124,12 +123,12 @@ public class ApplicationRunnerITest extends IndependentDbIntegrationTestBase {
         .find(new Document().append("changeSetMethod", "testChangeSetWithAlways").append("state", "EXECUTED"))
         .forEach(documentList::add);
 
-    Assert.assertEquals(2, documentList.size());
+    assertEquals(2, documentList.size());
 
   }
 
   @Test
-  public void shouldOneExecutedAndOneIgnoredChangeSet_whenRunningTwice_ifNotRunAlways() {
+  void shouldOneExecutedAndOneIgnoredChangeSet_whenRunningTwice_ifNotRunAlways() {
     // given
     MongockSpring5.MongockApplicationRunner runner = getBasicBuilder(TEST_RESOURCE_CLASSPATH)
         .buildApplicationRunner();
@@ -147,13 +146,13 @@ public class ApplicationRunnerITest extends IndependentDbIntegrationTestBase {
             .append("changeSetMethod", "testChangeSet"))
         .map(document -> document.getString("state"))
     .forEach(stateList::add);
-    Assert.assertEquals(2, stateList.size());
-    Assert.assertTrue(stateList.contains("EXECUTED"));
-    Assert.assertTrue(stateList.contains("IGNORED"));
+    assertEquals(2, stateList.size());
+    assertTrue(stateList.contains("EXECUTED"));
+    assertTrue(stateList.contains("IGNORED"));
   }
 
   @Test
-  public void shouldExecuteChangockAnnotations() {
+  void shouldExecuteChangockAnnotations() {
     // given, then
     getBasicBuilder(ChangeLogwithChangockAnnotations.class.getPackage().getName()).buildApplicationRunner().execute();
 

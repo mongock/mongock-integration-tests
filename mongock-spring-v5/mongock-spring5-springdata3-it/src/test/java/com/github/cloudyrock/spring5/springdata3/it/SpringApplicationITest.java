@@ -4,55 +4,64 @@ import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.Mongoc
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.ClientChangeLog;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client.ClientRepository;
 import com.github.cloudyrock.spring.v5.MongockSpring5;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import static org.awaitility.Awaitility.await;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-public class SpringApplicationITest {
+import java.util.concurrent.TimeUnit;
 
-    private static final String MONGO_CONTAINER = "mongo:4.2.0";
-    private static final Integer MONGO_PORT = 27017;
-    private static final String DEFAULT_DATABASE_NAME = "mongocktest";
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-    @ClassRule
-    public static GenericContainer mongo = new GenericContainer(MONGO_CONTAINER).withExposedPorts(MONGO_PORT);
+@Testcontainers
+class SpringApplicationITest extends NotSharedMongoContainerTestBase {
 
-    @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
 
-    private static ConfigurableApplicationContext ctx;
+    private ConfigurableApplicationContext ctx;
 
-    @BeforeClass
-    public static void setUpApplication() {
+    @BeforeEach
+    void setUpApplication() {
 
         ctx = Mongock4Spring5SpringData3App.getSpringAppBuilder()
                 .properties(
+                        "server.port=0",// random port
                         "spring.data.mongodb.uri=" + String.format("mongodb://%s:%d", mongo.getContainerIpAddress(), mongo.getFirstMappedPort()),
                         "spring.data.mongodb.database=" + DEFAULT_DATABASE_NAME
                 ).run();
     }
 
-    @Test
-    public void SpringApplicationShouldRunChangeLogs() {
-        Assert.assertEquals(ClientChangeLog.INITIAL_CLIENTS, ctx.getBean(ClientRepository.class).count());
+    @AfterEach
+    void closingSpringApp() {
+        ctx.close();
+        await()
+                .atMost(1, TimeUnit.MINUTES)
+                .pollInterval(1, TimeUnit.SECONDS)
+                .until(()-> !ctx.isActive());
     }
 
     @Test
-    public void ApplicationRunnerShouldBeInjected() {
+    void SpringApplicationShouldRunChangeLogs() {
+        assertEquals(ClientChangeLog.INITIAL_CLIENTS, ctx.getBean(ClientRepository.class).count());
+    }
+
+    @Test
+    void ApplicationRunnerShouldBeInjected() {
         ctx.getBean(MongockSpring5.MongockApplicationRunner.class);
     }
 
     @Test
-    public void InitializingBeanShouldNotBeInjected() {
-        exceptionRule.expect(NoSuchBeanDefinitionException.class);
-        exceptionRule.expectMessage("No qualifying bean of type 'com.github.cloudyrock.spring.v5.MongockSpring5$MongockInitializingBeanRunner' available");
-        ctx.getBean(MongockSpring5.MongockInitializingBeanRunner.class);
+    void InitializingBeanShouldNotBeInjected() {
+        Exception ex = assertThrows(
+                NoSuchBeanDefinitionException.class,
+                () -> ctx.getBean(MongockSpring5.MongockInitializingBeanRunner.class),
+                "MongockInitializingBeanRunner should not be injected to the context as runner-type is not set");
+        assertEquals(
+                "No qualifying bean of type 'com.github.cloudyrock.spring.v5.MongockSpring5$MongockInitializingBeanRunner' available",
+                ex.getMessage()
+        );
     }
 }
