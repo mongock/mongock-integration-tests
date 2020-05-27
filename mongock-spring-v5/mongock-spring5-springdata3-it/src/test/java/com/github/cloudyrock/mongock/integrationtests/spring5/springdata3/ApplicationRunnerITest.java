@@ -1,29 +1,30 @@
-package com.github.cloudyrock.spring5.springdata3.it;
+package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3;
 
 
 
 
 //TODO move to JUnit 5 and add parameterized tests for different versions of MongoDb
-// https://github.com/testcontainers/testcontainers-java/issues/1387
+// - replicaset on testcontainers : https://github.com/testcontainers/testcontainers-java/issues/1387
 // - 3.x With no transactions
 // - 4.0.X With transactions in replica sets
 // - 4.2.X with transactions in sharded collections
 
 
 import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.SpringDataMongo3Driver;
+import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.general.AnotherMongockTestResource;
+import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.withChangockAnnotations.ChangeLogwithChangockAnnotations;
 import com.github.cloudyrock.spring.v5.MongockSpring5;
-import com.github.cloudyrock.spring5.springdata3.it.changelogs.general.AnotherMongockTestResource;
-import com.github.cloudyrock.spring5.springdata3.it.changelogs.general.MongockTestResource;
-import com.github.cloudyrock.spring5.springdata3.it.changelogs.withChangockAnnotations.ChangeLogwithChangockAnnotations;
+import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.general.MongockTestResource;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import org.bson.Document;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
-class ApplicationRunnerITest extends NotSharedMongoContainerTestBase {
+class ApplicationRunnerITest {
 
 
   private static final String CHANGELOG_COLLECTION_NAME = "mongockChangeLog";
@@ -45,31 +46,38 @@ class ApplicationRunnerITest extends NotSharedMongoContainerTestBase {
   private MongoTemplate mongoTemplate;
 
 
-  @BeforeEach
-  void before() {
+  void start(String mongoVersion) {
+    GenericContainer mongo = RuntimeTestUtil.startMongoContainer(mongoVersion);
     String connectionString = String.format("mongodb://%s:%d", mongo.getContainerIpAddress(), mongo.getFirstMappedPort());
     mongoClient = MongoClients.create(connectionString);
-    mongoTemplate = new MongoTemplate(mongoClient, DEFAULT_DATABASE_NAME);
+    mongoTemplate = new MongoTemplate(mongoClient, RuntimeTestUtil.DEFAULT_DATABASE_NAME);
   }
 
-  @Test
-  void shouldBuildInitializingBeanRunner() {
+
+  @ParameterizedTest
+  @ValueSource(strings = {"mongo:4.2.0"})
+  void shouldBuildInitializingBeanRunner(String mongoVersion) {
+    start(mongoVersion);
     // given
     assertEquals(
         MongockSpring5.MongockApplicationRunner.class,
         getBasicBuilder(TEST_RESOURCE_CLASSPATH).buildApplicationRunner().getClass());
   }
 
-  @Test
-  void shouldBuildApplicationRunner() {
+  @ParameterizedTest
+  @ValueSource(strings = {"mongo:4.2.0"})
+  void shouldBuildApplicationRunner(String mongoVersion) {
+    start(mongoVersion);
     // given
     assertEquals(
         MongockSpring5.MongockInitializingBeanRunner.class,
         getBasicBuilder(TEST_RESOURCE_CLASSPATH).buildInitializingBeanRunner().getClass());
   }
 
-  @Test
-  void shouldExecuteAllChangeSets() {
+  @ParameterizedTest
+  @ValueSource(strings = {"mongo:4.2.0"})
+  void shouldExecuteAllChangeSets(String mongoVersion) {
+    start(mongoVersion);
     // given, then
     getBasicBuilder(TEST_RESOURCE_CLASSPATH).buildApplicationRunner().execute();
 
@@ -79,8 +87,10 @@ class ApplicationRunnerITest extends NotSharedMongoContainerTestBase {
     assertEquals(1, change1);
   }
 
-  @Test
-  void shouldStoreMetadata_WhenChangeSetIsTrack_IfAddedInBuilder() {
+  @ParameterizedTest
+  @ValueSource(strings = {"mongo:4.2.0"})
+  void shouldStoreMetadata_WhenChangeSetIsTrack_IfAddedInBuilder(String mongoVersion) {
+    start(mongoVersion);
     // given
     Map<String, Object> metadata = new HashMap<>();
     metadata.put("string_key", "string_value");
@@ -107,8 +117,10 @@ class ApplicationRunnerITest extends NotSharedMongoContainerTestBase {
 
   }
 
-  @Test
-  void shouldTwoExecutedChangeSet_whenRunningTwice_ifRunAlways() {
+  @ParameterizedTest
+  @ValueSource(strings = {"mongo:4.2.0"})
+  void shouldTwoExecutedChangeSet_whenRunningTwice_ifRunAlways(String mongoVersion) {
+    start(mongoVersion);
     // given
     MongockSpring5.MongockApplicationRunner runner = getBasicBuilder(TEST_RESOURCE_CLASSPATH).buildApplicationRunner();
 
@@ -127,8 +139,10 @@ class ApplicationRunnerITest extends NotSharedMongoContainerTestBase {
 
   }
 
-  @Test
-  void shouldOneExecutedAndOneIgnoredChangeSet_whenRunningTwice_ifNotRunAlways() {
+  @ParameterizedTest
+  @ValueSource(strings = {"mongo:4.2.0"})
+  void shouldOneExecutedAndOneIgnoredChangeSet_whenRunningTwice_ifNotRunAlways(String mongoVersion) {
+    start(mongoVersion);
     // given
     MongockSpring5.MongockApplicationRunner runner = getBasicBuilder(TEST_RESOURCE_CLASSPATH)
         .buildApplicationRunner();
@@ -151,8 +165,10 @@ class ApplicationRunnerITest extends NotSharedMongoContainerTestBase {
     assertTrue(stateList.contains("IGNORED"));
   }
 
-  @Test
-  void shouldExecuteChangockAnnotations() {
+  @ParameterizedTest
+  @ValueSource(strings = {"mongo:4.2.0"})
+  void shouldExecuteChangockAnnotations(String mongoVersion) {
+    start(mongoVersion);
     // given, then
     getBasicBuilder(ChangeLogwithChangockAnnotations.class.getPackage().getName()).buildApplicationRunner().execute();
 

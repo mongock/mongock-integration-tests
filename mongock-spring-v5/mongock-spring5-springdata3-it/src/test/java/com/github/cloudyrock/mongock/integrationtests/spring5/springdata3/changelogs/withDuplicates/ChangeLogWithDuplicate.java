@@ -1,4 +1,4 @@
-package com.github.cloudyrock.spring5.springdata3.it.changelogs.withDuplicates;
+package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.withDuplicates;
 
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
