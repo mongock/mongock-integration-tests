@@ -5,18 +5,16 @@
 * Spring 5 version must be grater(or equal) than 2.3.0.M2
 * It uses an alpha version of Mongock
 * Official documentation for Mongock V4.0.X has not been released yet
-* It uses a RC for Spring-data, so spring milestone repository is required for maven to retrieve the dependencies
 * It requires a MongoDB instance running
 * Currently does not take into account changeLogs from previous versions. 
 This means it will probably re-run changeLogs from older migrations. 
 This will be fixed soon in next alpha releases.
-* Builder API has changed considerably. Please read brief explanation below.
+* Builder API has changed considerably from previous versions. Please read brief explanation below.
 * In case of using spring-data, please notice you must use Mongo**ck**Template, instead of MongoTemplate.
 Both provide the same API, so you don't miss anything, but Mongo**ck**Template is a sort of decorator providing 
 lock support. Actually, you would get an error if using MongoTemplate in your changeLogs.
-* If you are using spring-data, currently, if you use your own spring repositories in your changeLogs,
-they won't be covered by the lock. **This will be provided in next releases of this version, though**
-* You will see a warn from spring-data like `Automatic index creation will be disabled by default as of Spring Data MongoDB 3.x`.
+* Now, when using spring-data, you can use your own repositories and beans in your changeSets, as long as they are interfaces.
+* You will probably see a warn from spring-data like `Automatic index creation will be disabled by default as of Spring Data MongoDB 3.x`.
 For simplicity, we haven't set up the indexes manually(probably we'll need to do it when upgrading this project), but you should probably do.
 * There are two ChangeSet and @ChangeLog annotation pairs. One pair implementing in Mongock project and another pair implemented in Changock project
 (this is the core project in which Mongock is based on). Currently there is a bug and Changock annotations are not processed, only Mongock ones. This will bbe
