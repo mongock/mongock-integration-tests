@@ -1,0 +1,3 @@
+spring:
+  mongock:
+    change-logs-scan-package: com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client
