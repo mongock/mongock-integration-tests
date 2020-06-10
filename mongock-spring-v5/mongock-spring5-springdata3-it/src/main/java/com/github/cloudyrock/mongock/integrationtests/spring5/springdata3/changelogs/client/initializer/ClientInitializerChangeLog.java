@@ -1,4 +1,4 @@
-package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client;
+package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.initializer;
 
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
@@ -12,8 +12,8 @@ import java.util.stream.IntStream;
 
 import static com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.Mongock4Spring5SpringData3App.CLIENTS_COLLECTION_NAME;
 
-@ChangeLog
-public class ClientChangeLog {
+@ChangeLog(order = "1")
+public class ClientInitializerChangeLog {
 
     public final static int INITIAL_CLIENTS = 10;
 
@@ -28,17 +28,4 @@ public class ClientChangeLog {
         result.forEach(System.out::println);
 
     }
-
-    @ChangeSet(id = "data-updater-with-mongockTemplate", order = "002", author = "mongock")
-    public void dataUpdater(MongockTemplate template) {
-
-        List<Client> clients = template.findAll(Client.class, CLIENTS_COLLECTION_NAME);
-
-        clients.stream()
-                .map(client -> client.setName(client.getName() + "_updated"))
-                .forEach(client -> template.save(client, CLIENTS_COLLECTION_NAME));
-
-    }
-
-
 }
