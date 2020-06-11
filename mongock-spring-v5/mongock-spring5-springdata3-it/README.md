@@ -19,6 +19,11 @@ For simplicity, we haven't set up the indexes manually(probably we'll need to do
 * There are two ChangeSet and @ChangeLog annotation pairs. One pair implementing in Mongock project and another pair implemented in Changock project
 (this is the core project in which Mongock is based on). Currently there is a bug and Changock annotations are not processed, only Mongock ones. This will bbe
 also fixed in next releases
+* Migration FROM mongoBee: Look at application.yml file, property `legacy-migration`, class `MongockLegacyMigration`
+* Migration TO Mongock 3.X -> execute in MongoDB directly 
+```javascript 1.8
+db.mongockChangeLog.remove({$or:[{"state":"FAILED"}, {"state": "IGNORED"}]})
+```
 
 ## New Builder approach
 Before version 4, Mongock was tightly coupled to MongoDB driver and connection libraries, such as spring-data.

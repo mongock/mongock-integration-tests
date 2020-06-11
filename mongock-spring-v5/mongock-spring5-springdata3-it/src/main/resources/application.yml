@@ -6,6 +6,7 @@ spring:
       - com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.ClientUpdater2ChangeLog
     legacy-migration:
       collection-name: dbchangelog
+    track-ignored: true
 
 
 

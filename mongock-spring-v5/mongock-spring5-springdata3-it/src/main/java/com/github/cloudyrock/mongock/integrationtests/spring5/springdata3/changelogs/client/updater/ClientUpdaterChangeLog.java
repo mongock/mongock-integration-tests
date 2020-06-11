@@ -18,11 +18,11 @@ public class ClientUpdaterChangeLog {
     public final static int INITIAL_CLIENTS = 10;
 
 
-    @ChangeSet(id = "data-updater-with-mongockTemplate", order = "001", author = "mongock")
+    @ChangeSet(id = "data-updater-with-mongockTemplate", order = "001", author = "mongock", failFast = false)
     public void dataUpdater(MongockTemplate template) {
 
         List<Client> clients = template.findAll(Client.class, CLIENTS_COLLECTION_NAME);
-
+        if(true) throw new RuntimeException();
         clients.stream()
                 .map(client -> client.setName(client.getName() + "_updated"))
                 .forEach(client -> template.save(client, CLIENTS_COLLECTION_NAME));
