@@ -43,6 +43,4 @@ public class Mongock4Spring5SpringData3App {
     converters.add(ZonedDateTimeToDateConverter.INSTANCE);
     return new MongoCustomConversions(converters);
   }
-
 }
-//@SpringBootApplication

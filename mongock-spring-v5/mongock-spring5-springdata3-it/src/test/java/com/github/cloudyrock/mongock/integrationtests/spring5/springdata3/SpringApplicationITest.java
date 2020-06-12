@@ -1,6 +1,6 @@
 package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3;
 
-import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.ClientChangeLog;
+import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.initializer.ClientInitializerChangeLog;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client.ClientRepository;
 import com.github.cloudyrock.spring.v5.MongockSpring5;
 import org.junit.jupiter.api.AfterEach;
@@ -41,7 +41,7 @@ class SpringApplicationITest {
     @ValueSource(strings = {"mongo:4.2.0", "mongo:3.6.3"})
     void SpringApplicationShouldRunChangeLogs(String mongoVersion) {
         ctx = RuntimeTestUtil.startSpringAppWithMongoVersionAndDefaultPackage(mongoVersion);
-        assertEquals(ClientChangeLog.INITIAL_CLIENTS, ctx.getBean(ClientRepository.class).count());
+        assertEquals(ClientInitializerChangeLog.INITIAL_CLIENTS, ctx.getBean(ClientRepository.class).count());
     }
 
 
