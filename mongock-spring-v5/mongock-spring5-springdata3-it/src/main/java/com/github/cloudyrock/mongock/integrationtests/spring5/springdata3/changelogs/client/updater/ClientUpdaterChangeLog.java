@@ -22,7 +22,6 @@ public class ClientUpdaterChangeLog {
     public void dataUpdater(MongockTemplate template) {
 
         List<Client> clients = template.findAll(Client.class, CLIENTS_COLLECTION_NAME);
-        if(true) throw new RuntimeException();
         clients.stream()
                 .map(client -> client.setName(client.getName() + "_updated"))
                 .forEach(client -> template.save(client, CLIENTS_COLLECTION_NAME));
