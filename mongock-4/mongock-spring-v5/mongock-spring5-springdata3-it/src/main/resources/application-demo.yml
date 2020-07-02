@@ -4,9 +4,8 @@ spring:
       - com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.initializer
       - com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.updater
       - com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.ClientUpdater2ChangeLog
-    legacy-migration:
-      collection-name: dbchangelog
-      changes-count-expectation: 2 # this is optional and sets the changes-migration expectations. If you have 3 documents in your legacy changeLog collection, you should set this to 3
+    runner-type: initializingbean
+
 
 
 
