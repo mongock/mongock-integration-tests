@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>mongock-spring-v5</module>
+        <module>mongock-4</module>
     </modules>
 
     <properties>
