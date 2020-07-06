@@ -24,23 +24,23 @@ import java.util.List;
 @EnableMongoRepositories(basePackageClasses = ClientRepository.class)
 public class Mongock4Spring5SpringData3App {
 
-  public final static String CLIENTS_COLLECTION_NAME = "clientCollection";
+    public final static String CLIENTS_COLLECTION_NAME = "clientCollection";
 
-  public static void main(String[] args) {
-    getSpringAppBuilder().run(args);
-  }
-
-
-  public static SpringApplicationBuilder getSpringAppBuilder() {
-    return new SpringApplicationBuilder().sources(Mongock4Spring5SpringData3App.class);
-  }
+    public static void main(String[] args) {
+        getSpringAppBuilder().run(args);
+    }
 
 
-  @Bean
-  public MongoCustomConversions customConversions() {
-    List<Converter<?, ?>> converters = new ArrayList<>();
-    converters.add(DateToZonedDateTimeConverter.INSTANCE);
-    converters.add(ZonedDateTimeToDateConverter.INSTANCE);
-    return new MongoCustomConversions(converters);
-  }
+    public static SpringApplicationBuilder getSpringAppBuilder() {
+        return new SpringApplicationBuilder().sources(Mongock4Spring5SpringData3App.class);
+    }
+
+
+    @Bean
+    public MongoCustomConversions customConversions() {
+        List<Converter<?, ?>> converters = new ArrayList<>();
+        converters.add(DateToZonedDateTimeConverter.INSTANCE);
+        converters.add(ZonedDateTimeToDateConverter.INSTANCE);
+        return new MongoCustomConversions(converters);
+    }
 }

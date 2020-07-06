@@ -1,13 +1,5 @@
 package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3;
 
-
-//TODO move to JUnit 5 and add parameterized tests for different versions of MongoDb
-// - replicaset on testcontainers : https://github.com/testcontainers/testcontainers-java/issues/1387
-// - 3.x With no transactions
-// - 4.0.X With transactions in replica sets
-// - 4.2.X with transactions in sharded collections
-
-
 import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.SpringDataMongo3Driver;
 import com.github.cloudyrock.mongock.driver.mongodb.sync.v4.changelogs.MongockSync4LegacyMigrationChangeLog;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.general.AnotherMongockTestResource;
@@ -51,7 +43,7 @@ class ApplicationRunnerITest {
 
 
     void start(String mongoVersion) {
-        GenericContainer mongo = RuntimeTestUtil.startMongoContainer(mongoVersion);
+        GenericContainer mongo = RuntimeTestUtil.startMongoDbContainer(mongoVersion);
         String connectionString = String.format("mongodb://%s:%d", mongo.getContainerIpAddress(), mongo.getFirstMappedPort());
         mongoClient = MongoClients.create(connectionString);
         mongoTemplate = new MongoTemplate(mongoClient, RuntimeTestUtil.DEFAULT_DATABASE_NAME);
@@ -274,7 +266,7 @@ class ApplicationRunnerITest {
     }
 
     private SpringDataMongo3Driver buildDriver() {
-        SpringDataMongo3Driver driver = new SpringDataMongo3Driver(mongoTemplate);
+        SpringDataMongo3Driver driver = SpringDataMongo3Driver.withDefaultLock(mongoTemplate);
         driver.setChangeLogCollectionName(CHANGELOG_COLLECTION_NAME);
         return driver;
     }
@@ -283,8 +275,7 @@ class ApplicationRunnerITest {
         return MongockSpring5.builder()
                 .setDriver(buildDriver())
                 .addChangeLogsScanPackage(packagePath)
-                .setSpringContext(getApplicationContext())
-                .setDefaultLock();
+                .setSpringContext(getApplicationContext());
     }
 
     private ApplicationContext getApplicationContext() {

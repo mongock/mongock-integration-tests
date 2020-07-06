@@ -3,7 +3,6 @@ package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.StringUtils;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Container;
 
 public abstract class RuntimeTestUtil {
 
@@ -11,24 +10,24 @@ public abstract class RuntimeTestUtil {
   public static final String DEFAULT_DATABASE_NAME = "mongocktest";
 
 
-  public static GenericContainer  startMongoContainer(String mongoVersion) {
+  public static GenericContainer startMongoDbContainer(String mongoVersion) {
     GenericContainer container = new GenericContainer(mongoVersion).withExposedPorts(MONGO_PORT);
     container.start();
     return container;
   }
 
-  public static ConfigurableApplicationContext startSpringAppWithMongoVersionAndDefaultPackage(String mongoVersion) {
-    return startSpringAppWithMongoVersionAndPackage(
+  public static ConfigurableApplicationContext startSpringAppWithMongoDbVersionAndDefaultPackage(String mongoVersion) {
+    return startSpringAppWithMongoDbVersionAndPackage(
             mongoVersion,
             "com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client"
     );
   }
-  public static ConfigurableApplicationContext startSpringAppWithMongoVersionAndNoPackage(String mongoVersion) {
-    return startSpringAppWithMongoVersionAndPackage(mongoVersion, "");
+  public static ConfigurableApplicationContext startSpringAppWithMongoDbVersionAndNoPackage(String mongoVersion) {
+    return startSpringAppWithMongoDbVersionAndPackage(mongoVersion, "");
   }
 
-  public static ConfigurableApplicationContext startSpringAppWithMongoVersionAndPackage(String mongoVersion, String packagePath) {
-    GenericContainer container = startMongoContainer(mongoVersion);
+  public static ConfigurableApplicationContext startSpringAppWithMongoDbVersionAndPackage(String mongoDbVersion, String packagePath) {
+    GenericContainer container = startMongoDbContainer(mongoDbVersion);
     return Mongock4Spring5SpringData3App.getSpringAppBuilder()
             .properties(
                     "server.port=0",// random port

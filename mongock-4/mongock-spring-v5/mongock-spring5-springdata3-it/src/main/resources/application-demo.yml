@@ -4,7 +4,7 @@ spring:
       - com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.initializer
       - com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.updater
       - com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.ClientUpdater2ChangeLog
-    runner-type: initializingbean
+
 
 
 

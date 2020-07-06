@@ -40,7 +40,7 @@ class SpringApplicationITest {
     @ParameterizedTest
     @ValueSource(strings = {"mongo:4.2.0", "mongo:3.6.3"})
     void SpringApplicationShouldRunChangeLogs(String mongoVersion) {
-        ctx = RuntimeTestUtil.startSpringAppWithMongoVersionAndDefaultPackage(mongoVersion);
+        ctx = RuntimeTestUtil.startSpringAppWithMongoDbVersionAndDefaultPackage(mongoVersion);
         assertEquals(ClientInitializerChangeLog.INITIAL_CLIENTS, ctx.getBean(ClientRepository.class).count());
     }
 
@@ -48,7 +48,7 @@ class SpringApplicationITest {
     @ParameterizedTest
     @ValueSource(strings = {"mongo:4.2.0"})
     void ApplicationRunnerShouldBeInjected(String mongoVersion) {
-        ctx = RuntimeTestUtil.startSpringAppWithMongoVersionAndDefaultPackage(mongoVersion);
+        ctx = RuntimeTestUtil.startSpringAppWithMongoDbVersionAndDefaultPackage(mongoVersion);
         ctx.getBean(MongockSpring5.MongockApplicationRunner.class);
     }
 
@@ -56,7 +56,7 @@ class SpringApplicationITest {
     @ParameterizedTest
     @ValueSource(strings = {"mongo:4.2.0"})
     void InitializingBeanShouldNotBeInjected(String mongoVersion) {
-        ctx = RuntimeTestUtil.startSpringAppWithMongoVersionAndDefaultPackage(mongoVersion);
+        ctx = RuntimeTestUtil.startSpringAppWithMongoDbVersionAndDefaultPackage(mongoVersion);
         Exception ex = assertThrows(
                 NoSuchBeanDefinitionException.class,
                 () -> ctx.getBean(MongockSpring5.MongockInitializingBeanRunner.class),
@@ -73,7 +73,7 @@ class SpringApplicationITest {
 
         Exception ex = assertThrows(
                 BeanCreationException.class,
-                () -> RuntimeTestUtil.startSpringAppWithMongoVersionAndNoPackage(mongoVersion));
+                () -> RuntimeTestUtil.startSpringAppWithMongoDbVersionAndNoPackage(mongoVersion));
         assertTrue(ex.getMessage().contains("Mongock: You need to specify property: spring.mongock.changeLogsScanPackage"));
     }
 
