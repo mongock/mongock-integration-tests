@@ -22,13 +22,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.testcontainers.containers.GenericContainer;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(
-        classes = MongockTestConfigurationTest.ApplicationConfigurationInitializer.class,
-        initializers = MongockTestConfigurationTest.ApplicationConfigurationInitializer.class
-)
 @DataMongoTest
+@ExtendWith(SpringExtension.class)
 @EnableMongoRepositories(basePackageClasses = ClientRepository.class)
+@ContextConfiguration(initializers = MongockTestConfigurationTest.ApplicationConfigurationInitializer.class)
 public class MongockTestConfigurationTest {
 
     @Autowired
@@ -65,3 +62,4 @@ public class MongockTestConfigurationTest {
                 mongockTemplate.getCollection(TestConfigurationChangeLog.COLLECTION_NAME).countDocuments(new Document().append("field", "value")));
     }
 }
+
