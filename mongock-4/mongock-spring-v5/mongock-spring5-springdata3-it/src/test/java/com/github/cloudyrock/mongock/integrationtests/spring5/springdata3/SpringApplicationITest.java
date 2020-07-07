@@ -3,10 +3,10 @@ package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.initializer.ClientInitializerChangeLog;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client.ClientRepository;
 import com.github.cloudyrock.spring.v5.MongockSpring5;
+import io.changock.migration.api.exception.ChangockException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 // TODO add enum for mongo versions
 // TODO add methodSources to automatize parametrization
@@ -70,11 +69,11 @@ class SpringApplicationITest {
     @ParameterizedTest
     @ValueSource(strings = {"mongo:4.2.0"})
     void shouldThrowExceptionWhenScanPackageNotSpecified(String mongoVersion) {
-
         Exception ex = assertThrows(
-                BeanCreationException.class,
+                IllegalStateException.class,
                 () -> RuntimeTestUtil.startSpringAppWithMongoDbVersionAndNoPackage(mongoVersion));
-        assertTrue(ex.getMessage().contains("Mongock: You need to specify property: spring.mongock.changeLogsScanPackage"));
+        assertEquals(ChangockException.class, ex.getCause().getClass());
+        assertEquals("Scan package for changeLogs is not set: use appropriate setter", ex.getCause().getMessage());
     }
 
 
