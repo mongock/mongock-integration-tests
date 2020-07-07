@@ -51,7 +51,6 @@ public class MongockTestConfigurationTest {
     @BeforeEach
     void beforeEach() {
         this.mongockTemplate = mongockDriver.getMongockTemplate();
-        mongockTemplate.getCollection(TestConfigurationChangeLog.COLLECTION_NAME).deleteMany(new Document().append("field", "value"));
     }
 
     @Test
