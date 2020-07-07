@@ -5,22 +5,24 @@ import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.SpringDataMong
 import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.decorator.impl.MongockTemplate;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.testConfiguration.TestConfigurationChangeLog;
 import com.github.cloudyrock.spring.v5.MongockTestConfiguration;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import org.bson.Document;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.containers.GenericContainer;
 
 
 //TODO: Use testContainers here
-@ExtendWith(SpringExtension.class)
 @EnableAutoConfiguration
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -36,6 +38,13 @@ public class MongockTestConfigurationTest {
     @Configuration
     @MongockTestConfiguration
     public static class ApplicationConfiguration {
+
+        @Bean
+        public MongoTemplate mongoTemplate() {
+            GenericContainer mongo = RuntimeTestUtil.startMongoDbContainer("mongo:4.2.0");
+            MongoClient mongoClient = MongoClients.create(String.format("mongodb://%s:%d", mongo.getContainerIpAddress(), mongo.getFirstMappedPort()));
+            return new MongoTemplate(mongoClient, mongoClient.getDatabase(RuntimeTestUtil.DEFAULT_DATABASE_NAME).getName());
+        }
     }
 
     @BeforeEach
@@ -44,8 +53,7 @@ public class MongockTestConfigurationTest {
         mongockTemplate.getCollection(TestConfigurationChangeLog.COLLECTION_NAME).deleteMany(new Document().append("field", "value"));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"mongo:4.2.0"})
+    @Test
     void shouldInjectMongockTemplateToContext_wheMongockTestConfigurationAnnotation() {
 
         new TestConfigurationChangeLog().testConfigurationWithMongockTemplate(mongockTemplate);
