@@ -3,6 +3,7 @@ package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.initializer.ClientInitializerChangeLog;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client.ClientRepository;
 import com.github.cloudyrock.spring.v5.MongockSpring5;
+import io.changock.migration.api.exception.ChangockException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -70,11 +71,11 @@ class SpringApplicationITest {
     @ParameterizedTest
     @ValueSource(strings = {"mongo:4.2.0"})
     void shouldThrowExceptionWhenScanPackageNotSpecified(String mongoVersion) {
-
         Exception ex = assertThrows(
-                BeanCreationException.class,
+                IllegalStateException.class,
                 () -> RuntimeTestUtil.startSpringAppWithMongoDbVersionAndNoPackage(mongoVersion));
-        assertTrue(ex.getMessage().contains("Mongock: You need to specify property: spring.mongock.changeLogsScanPackage"));
+        assertEquals(ChangockException.class, ex.getCause().getClass());
+        assertEquals("Scan package for changeLogs is not set: use appropriate setter", ex.getCause().getMessage());
     }
 
 
