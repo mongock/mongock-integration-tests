@@ -22,7 +22,5 @@ public class ClientInitializerChangeLog {
                 .mapToObj(i -> new Client("name-" + i, "email-" + i, "phone" + i, "country" + i))
                 .collect(Collectors.toList());
         List<Client> result = clientRepository.saveAll(clients);
-        result.forEach(System.out::println);
-
     }
 }
