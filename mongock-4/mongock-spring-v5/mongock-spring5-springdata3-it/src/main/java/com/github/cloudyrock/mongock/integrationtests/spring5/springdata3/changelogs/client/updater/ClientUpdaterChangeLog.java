@@ -18,9 +18,8 @@ public class ClientUpdaterChangeLog {
     public final static int INITIAL_CLIENTS = 10;
 
 
-    @ChangeSet(id = "data-updater-with-mongockTemplate", order = "001", author = "mongock", failFast = false)
+    @ChangeSet(id = "data-updater-with-mongockTemplate", order = "001", author = "mongock")
     public void dataUpdater(MongockTemplate template) {
-
         List<Client> clients = template.findAll(Client.class, CLIENTS_COLLECTION_NAME);
         clients.stream()
                 .map(client -> client.setName(client.getName() + "_updated"))

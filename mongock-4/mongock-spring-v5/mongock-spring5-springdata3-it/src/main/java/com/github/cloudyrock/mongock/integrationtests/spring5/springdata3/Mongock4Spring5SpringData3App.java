@@ -6,9 +6,13 @@ import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.spring
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.spring.ZonedDateTimeToDateConverter;
 import com.github.cloudyrock.spring.v5.EnableMongock;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.MongoTransactionManager;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
@@ -33,6 +37,13 @@ public class Mongock4Spring5SpringData3App {
 
     public static SpringApplicationBuilder getSpringAppBuilder() {
         return new SpringApplicationBuilder().sources(Mongock4Spring5SpringData3App.class);
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "mongock.transactionable", havingValue = "true", matchIfMissing = true)
+    MongoTransactionManager transactionManager(MongoTemplate mongoTemplate) {
+        mongoTemplate.createCollection("clientCollection");
+        return new MongoTransactionManager(mongoTemplate.getMongoDbFactory());
     }
 
 

@@ -11,10 +11,11 @@ import com.mongodb.client.MongoDatabase;
 @ChangeLog(order = "1")
 public class MongockTestResource {
 
-  @ChangeSet(author = "testuser", id = "test1", order = "01")
+  @ChangeSet(author = "testuser", id = "test1", order = "01", failFast = false)
   public void testChangeSet() {
 
-    System.out.println("invoked 1");
+    throw new RuntimeException();
+//    System.out.println("invoked 1");
 
   }
 
