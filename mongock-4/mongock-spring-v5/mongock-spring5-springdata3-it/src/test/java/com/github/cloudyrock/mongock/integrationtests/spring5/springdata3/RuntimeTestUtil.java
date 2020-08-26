@@ -35,34 +35,26 @@ public abstract class RuntimeTestUtil {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("mongock.changeLogsScanPackage", "");
         parameters.put("mongock.transactionable", "false");
-        return startSpringAppWithParameters(startMongoDbContainer(mongoDBVersion), parameters);
+        return startSpringAppWithMongoDbVersionAndParameters(mongoDBVersion, parameters);
     }
 
     public static ConfigurableApplicationContext startSpringAppWithMongoDbVersionAndPackage(String mongoDBVersion, String packagePath) {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("mongock.changeLogsScanPackage", packagePath);
-        return startSpringAppWithParameters(startMongoDbContainer(mongoDBVersion), parameters);
+        return startSpringAppWithMongoDbVersionAndParameters(mongoDBVersion, parameters);
     }
 
     public static ConfigurableApplicationContext startSpringAppWithTransactionDisabledMongoDbVersionAndPackage(String mongoDBVersion, String packagePath) {
         Map<String, String> parameters = new HashMap<>();
         parameters.put("mongock.changeLogsScanPackage", packagePath);
         parameters.put("mongock.transactionable", "false");
-        return startSpringAppWithParameters(startMongoDbContainer(mongoDBVersion), parameters);
+        return startSpringAppWithMongoDbVersionAndParameters(mongoDBVersion, parameters);
     }
 
 
-//    public static ConfigurableApplicationContext startSpringAppWithMongoDbVersionAndPackage(MongoContainer container, String packagePath, boolean transactionEnabled) {
-//        String replicaSetUrl = container.getReplicaSetUrl();
-//        return Mongock4Spring5SpringData3App.getSpringAppBuilder()
-//                .properties(
-//                        "server.port=0",// random port
-//                        !StringUtils.isEmpty(packagePath) ? "mongock.changeLogsScanPackage=" + packagePath : "",
-//                        "spring.data.mongodb.uri=" + replicaSetUrl,
-//                        "spring.data.mongodb.database=" + DEFAULT_DATABASE_NAME,
-//                        "mongock.transactionable=" + (container.isTransactionable() && transactionEnabled)
-//                ).run();
-//    }
+    public static ConfigurableApplicationContext startSpringAppWithMongoDbVersionAndParameters(String mongoDBVersion, Map<String, String> parameters) {
+        return startSpringAppWithParameters(startMongoDbContainer(mongoDBVersion), parameters);
+    }
 
 
     public static ConfigurableApplicationContext startSpringAppWithParameters(MongoContainer container, Map<String, String> parameters) {

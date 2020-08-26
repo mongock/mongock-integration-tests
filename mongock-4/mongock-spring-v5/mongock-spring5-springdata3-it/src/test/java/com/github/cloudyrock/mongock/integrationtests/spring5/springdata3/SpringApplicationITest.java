@@ -66,6 +66,24 @@ class SpringApplicationITest {
 
     @ParameterizedTest
     @ValueSource(strings = {"mongo:4.2.6"})
+    void ApplicationRunnerShouldNotBeInjected_IfDisabledByProperties(String mongoVersion) {
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("mongock.enabled", "false");
+        parameters.put("mongock.changeLogsScanPackage", "com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client");
+        parameters.put("mongock.transactionable", "false");
+        ctx = RuntimeTestUtil.startSpringAppWithMongoDbVersionAndParameters(mongoVersion, parameters);
+        Exception ex = assertThrows(
+                NoSuchBeanDefinitionException.class,
+                () -> ctx.getBean(MongockSpring5.MongockApplicationRunner.class));
+        assertEquals(
+                "No qualifying bean of type 'com.github.cloudyrock.spring.v5.MongockSpring5$MongockApplicationRunner' available",
+                ex.getMessage()
+        );
+    }
+
+
+    @ParameterizedTest
+    @ValueSource(strings = {"mongo:4.2.6"})
     void InitializingBeanShouldNotBeInjected(String mongoVersion) {
         ctx = RuntimeTestUtil.startSpringAppWithMongoDbVersionAndDefaultPackage(mongoVersion);
         Exception ex = assertThrows(
