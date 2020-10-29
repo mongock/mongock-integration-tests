@@ -1,13 +1,16 @@
 package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3;
 
 
+import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.SpringDataMongo3Driver;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client.ClientRepository;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.spring.DateToZonedDateTimeConverter;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.spring.ZonedDateTimeToDateConverter;
 import com.github.cloudyrock.spring.v5.EnableMongock;
+import com.github.cloudyrock.spring.v5.MongockSpring5;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
@@ -23,7 +26,7 @@ import java.util.List;
  * Using @EnableMongock with minimal configuration only requires changeLog package to scan
  * in property file
  */
-@EnableMongock
+//@EnableMongock
 @SpringBootApplication
 @EnableMongoRepositories(basePackageClasses = ClientRepository.class)
 public class Mongock4Spring5SpringData3App {
@@ -39,11 +42,23 @@ public class Mongock4Spring5SpringData3App {
         return new SpringApplicationBuilder().sources(Mongock4Spring5SpringData3App.class);
     }
 
+    // It requires MongoDb with a replicaSet
+//    @Bean
+//    @ConditionalOnProperty(name = "mongock.transactionable", havingValue = "true", matchIfMissing = true)
+//    MongoTransactionManager transactionManager(MongoTemplate mongoTemplate) {
+//        mongoTemplate.createCollection("clientCollection");
+//        return new MongoTransactionManager(mongoTemplate.getMongoDbFactory());
+//    }
+
     @Bean
-    @ConditionalOnProperty(name = "mongock.transactionable", havingValue = "true", matchIfMissing = true)
-    MongoTransactionManager transactionManager(MongoTemplate mongoTemplate) {
-        mongoTemplate.createCollection("clientCollection");
-        return new MongoTransactionManager(mongoTemplate.getMongoDbFactory());
+    public MongockSpring5.MongockApplicationRunner mongockApplicationRunner(
+            ApplicationContext springContext,
+            MongoTemplate mongoTemplate) {
+        return MongockSpring5.builder()
+                .setDriver(SpringDataMongo3Driver.withDefaultLock(mongoTemplate))
+                .addChangeLogsScanPackage("<baseClassForChangeLogs>")
+                .setSpringContext(springContext)
+                .buildApplicationRunner();
     }
 
 
