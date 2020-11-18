@@ -28,7 +28,7 @@ import java.util.List;
  * Using @EnableMongock with minimal configuration only requires changeLog package to scan
  * in property file
  */
-//@EnableMongock
+@EnableMongock
 @SpringBootApplication
 @EnableMongoRepositories(basePackageClasses = ClientRepository.class)
 public class Mongock4Spring5SpringData3App {
@@ -52,18 +52,6 @@ public class Mongock4Spring5SpringData3App {
 //        return new MongoTransactionManager(mongoTemplate.getMongoDbFactory());
 //    }
 
-    @Bean
-    public MongockSpring5.MongockInitializingBeanRunner mongockApplicationRunner(
-            ApplicationContext springContext,
-            MongoTemplate mongoTemplate,
-            ApplicationEventPublisher applicationEventPublisher) {
-        return MongockSpring5.builder()
-                .setDriver(SpringDataMongo3Driver.withDefaultLock(mongoTemplate))
-                .addChangeLogsScanPackage(ClientUpdater2ChangeLog.class.getPackage().getName())
-                .setSpringContext(springContext)
-                .setSpringEventPublisher(applicationEventPublisher)
-                .buildInitializingBeanRunner();
-    }
 
 
     @Bean
