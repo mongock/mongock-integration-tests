@@ -1,4 +1,4 @@
-package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3;
+package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.events;
 
 import io.changock.runner.spring.util.events.SpringMigrationFailureEvent;
 import org.springframework.context.ApplicationListener;
