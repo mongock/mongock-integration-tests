@@ -120,7 +120,8 @@ class SpringApplicationITest {
         }
 
         // then
-        assertEquals(0, clientsCollection.countDocuments());
+        long actual = clientsCollection.countDocuments();
+        assertEquals(0, actual);
     }
 
     @ParameterizedTest

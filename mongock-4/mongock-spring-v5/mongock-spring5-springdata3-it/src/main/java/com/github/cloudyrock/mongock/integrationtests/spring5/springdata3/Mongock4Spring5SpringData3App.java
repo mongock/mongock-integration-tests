@@ -45,12 +45,12 @@ public class Mongock4Spring5SpringData3App {
     }
 
     // It requires MongoDb with a replicaSet
-//    @Bean
-//    @ConditionalOnProperty(name = "mongock.transactionable", havingValue = "true", matchIfMissing = true)
-//    MongoTransactionManager transactionManager(MongoTemplate mongoTemplate) {
-//        mongoTemplate.createCollection("clientCollection");
-//        return new MongoTransactionManager(mongoTemplate.getMongoDbFactory());
-//    }
+    @Bean
+    @ConditionalOnProperty(name = "mongock.transactionable", havingValue = "true", matchIfMissing = true)
+    MongoTransactionManager transactionManager(MongoTemplate mongoTemplate) {
+        mongoTemplate.createCollection("clientCollection");
+        return new MongoTransactionManager(mongoTemplate.getMongoDbFactory());
+    }
 
 
 

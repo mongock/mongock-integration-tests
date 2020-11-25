@@ -1,9 +1,7 @@
 package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3;
 
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.util.MongoContainer;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +60,6 @@ public abstract class RuntimeTestUtil {
         return Mongock4Spring5SpringData3App.getSpringAppBuilder().properties(parametersArray).run();
     }
 
-    @NotNull
     private static String[] getParametersArray(MongoContainer container, Map<String, String> parameters) {
         String replicaSetUrl = container.getReplicaSetUrl();
         List<String> parametersList = parameters.entrySet()
