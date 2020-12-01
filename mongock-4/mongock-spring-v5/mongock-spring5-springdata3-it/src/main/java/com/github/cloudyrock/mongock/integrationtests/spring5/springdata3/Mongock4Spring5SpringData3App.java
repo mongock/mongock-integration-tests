@@ -48,40 +48,6 @@ public class Mongock4Spring5SpringData3App {
         return new MongoTransactionManager(mongoTemplate.getMongoDbFactory());
     }
 
-
-    private static class InternalMetric {
-        private long count;
-        private long sum;
-
-
-        public InternalMetric() {
-            this.count = 0;
-            this.sum = 0;
-        }
-
-        public InternalMetric(long sum, long count) {
-            this.count = count;
-            this.sum = sum;
-        }
-    }
-
-    AtomicReference<InternalMetric> internalMetric = new AtomicReference<>(new InternalMetric());
-
-    public void addSample(long sample) {
-        atomicOperationLoop(internalMetric,
-                current -> new InternalMetric(current.sum + sample, current.count + 1)
-        );
-    }
-
-    public <T> void atomicOperationLoop(AtomicReference<T> atomicReference, Function<T, T> operationBasedOnCurrentState) {
-        T currentState;
-        T newState;
-        do {
-            currentState = atomicReference.get();
-            newState = operationBasedOnCurrentState.apply(currentState);
-        } while (!atomicReference.compareAndSet(currentState, newState));
-    }
-
     @Bean
     public MongoCustomConversions customConversions() {
         List<Converter<?, ?>> converters = new ArrayList<>();
