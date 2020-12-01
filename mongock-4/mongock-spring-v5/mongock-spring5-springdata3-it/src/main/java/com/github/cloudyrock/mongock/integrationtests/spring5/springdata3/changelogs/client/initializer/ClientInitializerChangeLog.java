@@ -1,9 +1,10 @@
 package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.initializer;
 
-import com.github.cloudyrock.mongock.ChangeLog;
-import com.github.cloudyrock.mongock.ChangeSet;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client.Client;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client.ClientRepository;
+import io.changock.migration.api.annotations.ChangeLog;
+import io.changock.migration.api.annotations.ChangeSet;
+
 
 import java.util.List;
 import java.util.stream.Collectors;

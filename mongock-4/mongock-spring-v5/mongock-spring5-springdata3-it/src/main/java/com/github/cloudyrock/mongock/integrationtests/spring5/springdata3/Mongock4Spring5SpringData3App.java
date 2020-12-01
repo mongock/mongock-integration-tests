@@ -1,13 +1,18 @@
 package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3;
 
 
+import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.SpringDataMongoV3Driver;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client.ClientRepository;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.spring.DateToZonedDateTimeConverter;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.spring.ZonedDateTimeToDateConverter;
-import com.github.cloudyrock.spring.v5.EnableMongock;
+import io.changock.runner.spring.v5.ChangockSpring5;
+import io.changock.runner.spring.v5.SpringApplicationRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mongodb.MongoTransactionManager;
@@ -17,14 +22,12 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 /**
  * Using @EnableMongock with minimal configuration only requires changeLog package to scan
  * in property file
  */
-@EnableMongock
+//@EnableChangock
 @SpringBootApplication
 @EnableMongoRepositories(basePackageClasses = ClientRepository.class)
 public class Mongock4Spring5SpringData3App {
@@ -47,6 +50,29 @@ public class Mongock4Spring5SpringData3App {
         mongoTemplate.createCollection("clientCollection");
         return new MongoTransactionManager(mongoTemplate.getMongoDbFactory());
     }
+
+    /**
+     * This method has been modified in order to use Changock runner instead of Mongock(deprecated).
+     * This bean will be injected if SpringBoot application class(Mongock4Spring5SpringData3App) is not annotated with @EnableChangock
+     */
+    @Bean
+    @ConditionalOnMissingBean(SpringApplicationRunner.class)
+    public SpringApplicationRunner mongockApplicationRunner(
+            ApplicationContext springContext,
+            MongoTemplate mongoTemplate,
+            ApplicationEventPublisher eventPublisher) {
+
+        return ChangockSpring5.builder()
+                .setDriver(SpringDataMongoV3Driver.withDefaultLock(mongoTemplate))
+                .addChangeLogClass(com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.ClientUpdater2ChangeLog.class)
+                .addChangeLogsScanPackage("com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.initializer")
+                .setSpringContext(springContext)
+                .setEventPublisher(eventPublisher)
+                .buildApplicationRunner();
+    }
+
+
+
 
     @Bean
     public MongoCustomConversions customConversions() {
