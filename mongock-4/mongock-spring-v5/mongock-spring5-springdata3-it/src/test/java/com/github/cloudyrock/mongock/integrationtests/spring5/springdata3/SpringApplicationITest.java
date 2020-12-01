@@ -69,15 +69,15 @@ class SpringApplicationITest {
     @ValueSource(strings = {"mongo:4.2.6"})
     void ApplicationRunnerShouldNotBeInjected_IfDisabledByProperties(String mongoVersion) {
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("mongock.enabled", "false");
-        parameters.put("mongock.changeLogsScanPackage", "com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client");
-        parameters.put("mongock.transactionable", "false");
+        parameters.put("changock.enabled", "false");
+        parameters.put("changock.changeLogsScanPackage", "com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client");
+        parameters.put("changock.transactionable", "false");
         ctx = RuntimeTestUtil.startSpringAppWithMongoDbVersionAndParameters(mongoVersion, parameters);
         Exception ex = assertThrows(
                 NoSuchBeanDefinitionException.class,
                 () -> ctx.getBean(SpringApplicationRunner.class));
         assertEquals(
-                "No qualifying bean of type 'com.github.cloudyrock.spring.v5.MongockSpring5$MongockApplicationRunner' available",
+                "No qualifying bean of type 'io.changock.runner.spring.v5.SpringApplicationRunner' available",
                 ex.getMessage()
         );
     }
@@ -114,7 +114,7 @@ class SpringApplicationITest {
         MongoCollection clientsCollection = MongoClients.create(mongoContainer.getReplicaSetUrl()).getDatabase(RuntimeTestUtil.DEFAULT_DATABASE_NAME).getCollection(CLIENTS_COLLECTION_NAME);
         try {
             Map<String, String> parameters = new HashMap<>();
-            parameters.put("mongock.changeLogsScanPackage",  RollbackChangeLog.class.getPackage().getName());
+            parameters.put("changock.changeLogsScanPackage",  RollbackChangeLog.class.getPackage().getName());
             ctx = RuntimeTestUtil.startSpringAppWithParameters(mongoContainer, parameters);
         } catch (Exception ex) {
             //ignore

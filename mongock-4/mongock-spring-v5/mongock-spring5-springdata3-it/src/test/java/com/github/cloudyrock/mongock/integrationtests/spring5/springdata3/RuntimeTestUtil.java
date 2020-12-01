@@ -31,21 +31,21 @@ public abstract class RuntimeTestUtil {
     public static ConfigurableApplicationContext startSpringAppWithMongoDbVersionAndNoPackage(String mongoDBVersion) {
 
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("mongock.changeLogsScanPackage", "");
-        parameters.put("mongock.transactionable", "false");
+        parameters.put("changock.changeLogsScanPackage", "");
+        parameters.put("changock.transactionable", "false");
         return startSpringAppWithMongoDbVersionAndParameters(mongoDBVersion, parameters);
     }
 
     public static ConfigurableApplicationContext startSpringAppWithMongoDbVersionAndPackage(String mongoDBVersion, String packagePath) {
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("mongock.changeLogsScanPackage", packagePath);
+        parameters.put("changock.changeLogsScanPackage", packagePath);
         return startSpringAppWithMongoDbVersionAndParameters(mongoDBVersion, parameters);
     }
 
     public static ConfigurableApplicationContext startSpringAppWithTransactionDisabledMongoDbVersionAndPackage(String mongoDBVersion, String packagePath) {
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("mongock.changeLogsScanPackage", packagePath);
-        parameters.put("mongock.transactionable", "false");
+        parameters.put("changock.changeLogsScanPackage", packagePath);
+        parameters.put("changock.transactionable", "false");
         return startSpringAppWithMongoDbVersionAndParameters(mongoDBVersion, parameters);
     }
 
@@ -69,8 +69,8 @@ public abstract class RuntimeTestUtil {
         if(!parameters.containsKey("server.port")) {
             parametersList.add("server.port=0");
         }
-        if(!parameters.containsKey("mongock.transactionable")) {
-            parametersList.add("mongock.transactionable=" + container.isTransactionable());
+        if(!parameters.containsKey("changock.transactionable")) {
+            parametersList.add("changock.transactionable=" + container.isTransactionable());
         }
         parametersList.add("spring.data.mongodb.uri=" + replicaSetUrl);
         parametersList.add("spring.data.mongodb.database=" + DEFAULT_DATABASE_NAME);

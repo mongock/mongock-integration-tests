@@ -63,8 +63,8 @@ class SpringApplicationLegacyMigrationITest {
         LegacyMigrationUtils.setUpLegacyMigration(database.getCollection(LegacyMigrationUtils.LEGACY_CHANGELOG_COLLECTION_NAME));
         try {
             Map<String, String> parameters = new HashMap<>();
-            parameters.put("mongock.changeLogsScanPackage",  EmptyChangeLog.class.getPackage().getName());
-            parameters.put("mongock.legacy-migration.collection-name",  LegacyMigrationUtils.LEGACY_CHANGELOG_COLLECTION_NAME);
+            parameters.put("changock.changeLogsScanPackage",  EmptyChangeLog.class.getPackage().getName());
+            parameters.put("changock.legacy-migration.collection-name",  LegacyMigrationUtils.LEGACY_CHANGELOG_COLLECTION_NAME);
             ctx = RuntimeTestUtil.startSpringAppWithParameters(mongoContainer, parameters);
         } catch (Exception ex) {
             //ignore
@@ -96,9 +96,9 @@ class SpringApplicationLegacyMigrationITest {
         LegacyMigrationUtils.setUpLegacyMigration(database.getCollection(LegacyMigrationUtils.LEGACY_CHANGELOG_COLLECTION_NAME));
         try {
             Map<String, String> parameters = new HashMap<>();
-            parameters.put("mongock.changeLogsScanPackage",  EmptyChangeLog.class.getPackage().getName());
-            parameters.put("mongock.legacy-migration.collection-name",  LegacyMigrationUtils.LEGACY_CHANGELOG_COLLECTION_NAME);
-            parameters.put("mongock.legacy-migration.run-always",  Boolean.toString(runAlways));
+            parameters.put("changock.changeLogsScanPackage",  EmptyChangeLog.class.getPackage().getName());
+            parameters.put("changock.legacy-migration.collection-name",  LegacyMigrationUtils.LEGACY_CHANGELOG_COLLECTION_NAME);
+            parameters.put("changock.legacy-migration.run-always",  Boolean.toString(runAlways));
             ctx = RuntimeTestUtil.startSpringAppWithParameters(mongoContainer, parameters);
         } catch (Exception ex) {
             //ignore
