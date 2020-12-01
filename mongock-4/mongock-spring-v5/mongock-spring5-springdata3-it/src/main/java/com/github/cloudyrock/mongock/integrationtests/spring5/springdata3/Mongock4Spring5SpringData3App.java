@@ -42,7 +42,7 @@ public class Mongock4Spring5SpringData3App {
 
     // It requires MongoDb with a replicaSet
     @Bean
-    @ConditionalOnExpression("${mongock.transactionable:false} || ${changock.transactionable:false}")
+    @ConditionalOnExpression("${changock.transactionable:false}")
     MongoTransactionManager transactionManager(MongoTemplate mongoTemplate) {
         mongoTemplate.createCollection("clientCollection");
         return new MongoTransactionManager(mongoTemplate.getMongoDbFactory());
