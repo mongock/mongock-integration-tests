@@ -1,21 +1,15 @@
 package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3;
 
 
-import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.SpringDataMongo3Driver;
-import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.ClientUpdater2ChangeLog;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client.ClientRepository;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.spring.DateToZonedDateTimeConverter;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.spring.ZonedDateTimeToDateConverter;
 import com.github.cloudyrock.spring.v5.EnableMongock;
-import com.github.cloudyrock.spring.v5.MongockSpring5;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
@@ -23,6 +17,8 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 /**
  * Using @EnableMongock with minimal configuration only requires changeLog package to scan
@@ -46,13 +42,45 @@ public class Mongock4Spring5SpringData3App {
 
     // It requires MongoDb with a replicaSet
     @Bean
-    @ConditionalOnProperty(name = "mongock.transactionable", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnExpression("${mongock.transactionable:false} || ${changock.transactionable:false}")
     MongoTransactionManager transactionManager(MongoTemplate mongoTemplate) {
         mongoTemplate.createCollection("clientCollection");
         return new MongoTransactionManager(mongoTemplate.getMongoDbFactory());
     }
 
 
+    private static class InternalMetric {
+        private long count;
+        private long sum;
+
+
+        public InternalMetric() {
+            this.count = 0;
+            this.sum = 0;
+        }
+
+        public InternalMetric(long sum, long count) {
+            this.count = count;
+            this.sum = sum;
+        }
+    }
+
+    AtomicReference<InternalMetric> internalMetric = new AtomicReference<>(new InternalMetric());
+
+    public void addSample(long sample) {
+        atomicOperationLoop(internalMetric,
+                current -> new InternalMetric(current.sum + sample, current.count + 1)
+        );
+    }
+
+    public <T> void atomicOperationLoop(AtomicReference<T> atomicReference, Function<T, T> operationBasedOnCurrentState) {
+        T currentState;
+        T newState;
+        do {
+            currentState = atomicReference.get();
+            newState = operationBasedOnCurrentState.apply(currentState);
+        } while (!atomicReference.compareAndSet(currentState, newState));
+    }
 
     @Bean
     public MongoCustomConversions customConversions() {

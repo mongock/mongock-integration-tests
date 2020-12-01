@@ -14,6 +14,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import io.changock.migration.api.exception.ChangockException;
+import io.changock.runner.spring.v5.SpringApplicationRunner;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -60,7 +61,7 @@ class SpringApplicationITest {
     @ValueSource(strings = {"mongo:4.2.6"})
     void ApplicationRunnerShouldBeInjected(String mongoVersion) {
         ctx = RuntimeTestUtil.startSpringAppWithMongoDbVersionAndDefaultPackage(mongoVersion);
-        ctx.getBean(MongockSpring5.MongockApplicationRunner.class);
+        ctx.getBean(SpringApplicationRunner.class);
     }
 
 
@@ -74,7 +75,7 @@ class SpringApplicationITest {
         ctx = RuntimeTestUtil.startSpringAppWithMongoDbVersionAndParameters(mongoVersion, parameters);
         Exception ex = assertThrows(
                 NoSuchBeanDefinitionException.class,
-                () -> ctx.getBean(MongockSpring5.MongockApplicationRunner.class));
+                () -> ctx.getBean(SpringApplicationRunner.class));
         assertEquals(
                 "No qualifying bean of type 'com.github.cloudyrock.spring.v5.MongockSpring5$MongockApplicationRunner' available",
                 ex.getMessage()

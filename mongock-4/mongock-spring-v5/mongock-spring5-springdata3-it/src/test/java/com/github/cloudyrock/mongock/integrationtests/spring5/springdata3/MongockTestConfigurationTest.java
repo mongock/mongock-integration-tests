@@ -1,19 +1,17 @@
 package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3;
 
 
-import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.SpringDataMongo3Driver;
+import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.SpringDataMongoV3Driver;
 import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.decorator.impl.MongockTemplate;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.testConfiguration.TestConfigurationChangeLog;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client.ClientRepository;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.util.MongoContainer;
 import com.github.cloudyrock.spring.v5.MongockTestConfiguration;
 import org.bson.Document;
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -32,7 +30,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 public class MongockTestConfigurationTest {
 
     @Autowired
-    private SpringDataMongo3Driver mongockDriver;
+    private SpringDataMongoV3Driver mongockDriver;
 
     private MongockTemplate mongockTemplate;
     private static MongoContainer mongo;
