@@ -5,9 +5,9 @@ import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.SpringDataMong
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client.ClientRepository;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.spring.DateToZonedDateTimeConverter;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.spring.ZonedDateTimeToDateConverter;
+import com.github.cloudyrock.spring.v5.EnableMongock;
 import io.changock.runner.spring.v5.ChangockSpring5;
 import io.changock.runner.spring.v5.SpringApplicationRunner;
-import io.changock.runner.spring.v5.config.EnableChangock;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,7 +28,7 @@ import java.util.List;
  * Using @EnableMongock with minimal configuration only requires changeLog package to scan
  * in property file
  */
-@EnableChangock
+@EnableMongock
 @SpringBootApplication
 @EnableMongoRepositories(basePackageClasses = ClientRepository.class)
 public class Mongock4Spring5SpringData3App {
@@ -44,10 +44,17 @@ public class Mongock4Spring5SpringData3App {
         return new SpringApplicationBuilder().sources(Mongock4Spring5SpringData3App.class);
     }
 
+    // It requires MongoDb with a replicaSet
+    @Bean
+    @ConditionalOnExpression("${changock.transactionable:false}")
+    MongoTransactionManager transactionManager(MongoTemplate mongoTemplate) {
+        mongoTemplate.createCollection("clientCollection");
+        return new MongoTransactionManager(mongoTemplate.getMongoDbFactory());
+    }
+
     /**
      * This method has been modified in order to use Changock runner instead of Mongock(deprecated).
-     * This bean will be injected if SpringBoot application class(Mongock4Spring5SpringData3App) is not annotated with @EnableChangock and
-     * it hasn't been deactivated
+     * This bean will be injected if SpringBoot application class(Mongock4Spring5SpringData3App) is not annotated with @EnableChangock
      */
     @Bean
     @ConditionalOnMissingBean(SpringApplicationRunner.class)
@@ -64,14 +71,6 @@ public class Mongock4Spring5SpringData3App {
                 .setSpringContext(springContext)
                 .setEventPublisher(eventPublisher)
                 .buildApplicationRunner();
-    }
-    // It requires MongoDb with a replicaSet
-
-    @Bean
-    @ConditionalOnExpression("${changock.transactionable:false}")
-    MongoTransactionManager transactionManager(MongoTemplate mongoTemplate) {
-        mongoTemplate.createCollection("clientCollection");
-        return new MongoTransactionManager(mongoTemplate.getMongoDbFactory());
     }
 
 

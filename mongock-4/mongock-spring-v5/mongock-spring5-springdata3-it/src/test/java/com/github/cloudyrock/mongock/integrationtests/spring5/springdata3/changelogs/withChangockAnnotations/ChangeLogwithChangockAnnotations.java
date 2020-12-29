@@ -1,7 +1,8 @@
 package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.withChangockAnnotations;
 
-import io.changock.migration.api.annotations.ChangeLog;
-import io.changock.migration.api.annotations.ChangeSet;
+
+import com.github.cloudyrock.mongock.ChangeLog;
+import com.github.cloudyrock.mongock.ChangeSet;
 
 /**
  *

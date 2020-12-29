@@ -1,5 +1,6 @@
 package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3;
 
+import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.initializer.ClientInitializerChangeLog;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.empty.EmptyChangeLog;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.transaction.commitNonFailFast.CommitNonFailFastChangeLog;
@@ -9,12 +10,11 @@ import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.util.Constants;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.util.LegacyMigrationUtils;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.util.MongoContainer;
+import com.github.cloudyrock.spring.v5.MongockApplicationRunner;
+import com.github.cloudyrock.spring.v5.MongockInitializingBeanRunner;
 import com.github.cloudyrock.spring.v5.MongockSpring5;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import io.changock.migration.api.exception.ChangockException;
-import io.changock.runner.spring.v5.SpringApplicationRunner;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -61,7 +61,7 @@ class SpringApplicationITest {
     @ValueSource(strings = {"mongo:4.2.6"})
     void ApplicationRunnerShouldBeInjected(String mongoVersion) {
         ctx = RuntimeTestUtil.startSpringAppWithMongoDbVersionAndDefaultPackage(mongoVersion);
-        ctx.getBean(SpringApplicationRunner.class);
+        ctx.getBean(MongockApplicationRunner.class);
     }
 
 
@@ -75,9 +75,9 @@ class SpringApplicationITest {
         ctx = RuntimeTestUtil.startSpringAppWithMongoDbVersionAndParameters(mongoVersion, parameters);
         Exception ex = assertThrows(
                 NoSuchBeanDefinitionException.class,
-                () -> ctx.getBean(SpringApplicationRunner.class));
+                () -> ctx.getBean(MongockApplicationRunner.class));
         assertEquals(
-                "No qualifying bean of type 'io.changock.runner.spring.v5.SpringApplicationRunner' available",
+                "No qualifying bean of type 'io.changock.runner.spring.v5.MongockApplicationRunner' available",
                 ex.getMessage()
         );
     }
@@ -89,7 +89,7 @@ class SpringApplicationITest {
         ctx = RuntimeTestUtil.startSpringAppWithMongoDbVersionAndDefaultPackage(mongoVersion);
         Exception ex = assertThrows(
                 NoSuchBeanDefinitionException.class,
-                () -> ctx.getBean(MongockSpring5.MongockInitializingBeanRunner.class),
+                () -> ctx.getBean(MongockInitializingBeanRunner.class),
                 "MongockInitializingBeanRunner should not be injected to the context as runner-type is not set");
         assertEquals(
                 "No qualifying bean of type 'com.github.cloudyrock.spring.v5.MongockSpring5$MongockInitializingBeanRunner' available",
@@ -103,7 +103,7 @@ class SpringApplicationITest {
         Exception ex = assertThrows(
                 IllegalStateException.class,
                 () -> RuntimeTestUtil.startSpringAppWithMongoDbVersionAndNoPackage(mongoVersion));
-        assertEquals(ChangockException.class, ex.getCause().getClass());
+        assertEquals(MongockException.class, ex.getCause().getClass());
         assertEquals("Scan package for changeLogs is not set: use appropriate setter", ex.getCause().getMessage());
     }
 
