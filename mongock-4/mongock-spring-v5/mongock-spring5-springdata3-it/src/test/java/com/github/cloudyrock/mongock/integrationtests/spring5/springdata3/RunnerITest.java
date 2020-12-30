@@ -4,8 +4,6 @@ import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.change
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.general.MongockTestResource;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.withChangockAnnotations.ChangeLogwithChangockAnnotations;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.util.Constants;
-import com.github.cloudyrock.spring.v5.MongockApplicationRunner;
-import com.github.cloudyrock.spring.v5.MongockInitializingBeanRunner;
 import com.github.cloudyrock.spring.v5.MongockSpring5;
 import org.bson.Document;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,7 +30,7 @@ class RunnerITest extends ApplicationRunnerTestBase{
         start(mongoVersion);
         // given
         assertEquals(
-                MongockApplicationRunner.class,
+                MongockSpring5.MongockApplicationRunner.class,
                 getBasicBuilder(TEST_RESOURCE_CLASSPATH).buildApplicationRunner().getClass());
     }
 
@@ -42,7 +40,7 @@ class RunnerITest extends ApplicationRunnerTestBase{
         start(mongoVersion);
         // given
         assertEquals(
-                MongockInitializingBeanRunner.class,
+                MongockSpring5.MongockInitializingBeanRunner.class,
                 getBasicBuilder(TEST_RESOURCE_CLASSPATH).buildInitializingBeanRunner().getClass());
     }
 
@@ -94,7 +92,7 @@ class RunnerITest extends ApplicationRunnerTestBase{
     void shouldTwoExecutedChangeSet_whenRunningTwice_ifRunAlways(String mongoVersion) {
         start(mongoVersion);
         // given
-        MongockApplicationRunner runner = getBasicBuilder(TEST_RESOURCE_CLASSPATH).buildApplicationRunner();
+        MongockSpring5.MongockApplicationRunner runner = getBasicBuilder(TEST_RESOURCE_CLASSPATH).buildApplicationRunner();
 
         // when
         runner.execute();
@@ -116,7 +114,7 @@ class RunnerITest extends ApplicationRunnerTestBase{
     void shouldOneExecutedAndOneIgnoredChangeSet_whenRunningTwice_ifNotRunAlwaysAndTrackIgnore(String mongoVersion) {
         start(mongoVersion);
         // given
-        MongockApplicationRunner runner = getBasicBuilder(TEST_RESOURCE_CLASSPATH)
+        MongockSpring5.MongockApplicationRunner runner = getBasicBuilder(TEST_RESOURCE_CLASSPATH)
                 .setTrackIgnored(true)
                 .buildApplicationRunner();
 
@@ -144,7 +142,7 @@ class RunnerITest extends ApplicationRunnerTestBase{
     void shouldOneExecutedAndNoIgnoredChangeSet_whenRunningTwice_ifNotRunAlwaysAndNotTrackIgnore(String mongoVersion) {
         start(mongoVersion);
         // given
-        MongockApplicationRunner runner = getBasicBuilder(TEST_RESOURCE_CLASSPATH)
+        MongockSpring5.MongockApplicationRunner runner = getBasicBuilder(TEST_RESOURCE_CLASSPATH)
                 .buildApplicationRunner();
 
 

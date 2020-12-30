@@ -6,7 +6,6 @@ import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.spring.DateToZonedDateTimeConverter;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.spring.ZonedDateTimeToDateConverter;
 import com.github.cloudyrock.spring.v5.EnableMongock;
-import com.github.cloudyrock.spring.v5.MongockApplicationRunner;
 import com.github.cloudyrock.spring.v5.MongockSpring5;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -57,9 +56,9 @@ public class Mongock4Spring5SpringData3App {
      * This bean will be injected if SpringBoot application class(Mongock4Spring5SpringData3App) is not annotated with @EnableChangock
      */
     @Bean
-    @ConditionalOnMissingBean(MongockApplicationRunner.class)
+    @ConditionalOnMissingBean(MongockSpring5.MongockApplicationRunner.class)
     @ConditionalOnExpression("${mongock.enabled:true} && ${changock.enabled:true}")
-    public MongockApplicationRunner mongockApplicationRunner(
+    public MongockSpring5.MongockApplicationRunner mongockApplicationRunner(
             ApplicationContext springContext,
             MongoTemplate mongoTemplate,
             ApplicationEventPublisher eventPublisher) {
