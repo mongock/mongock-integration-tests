@@ -6,8 +6,8 @@ import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.spring.DateToZonedDateTimeConverter;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.spring.ZonedDateTimeToDateConverter;
 import com.github.cloudyrock.spring.v5.EnableMongock;
-import io.changock.runner.spring.v5.ChangockSpring5;
-import io.changock.runner.spring.v5.SpringApplicationRunner;
+import com.github.cloudyrock.spring.v5.MongockApplicationRunner;
+import com.github.cloudyrock.spring.v5.MongockSpring5;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -46,7 +46,7 @@ public class Mongock4Spring5SpringData3App {
 
     // It requires MongoDb with a replicaSet
     @Bean
-    @ConditionalOnExpression("${changock.transactionable:false}")
+    @ConditionalOnExpression("${mongock.transactionable:false}")
     MongoTransactionManager transactionManager(MongoTemplate mongoTemplate) {
         mongoTemplate.createCollection("clientCollection");
         return new MongoTransactionManager(mongoTemplate.getMongoDbFactory());
@@ -57,14 +57,14 @@ public class Mongock4Spring5SpringData3App {
      * This bean will be injected if SpringBoot application class(Mongock4Spring5SpringData3App) is not annotated with @EnableChangock
      */
     @Bean
-    @ConditionalOnMissingBean(SpringApplicationRunner.class)
+    @ConditionalOnMissingBean(MongockApplicationRunner.class)
     @ConditionalOnExpression("${mongock.enabled:true} && ${changock.enabled:true}")
-    public SpringApplicationRunner mongockApplicationRunner(
+    public MongockApplicationRunner mongockApplicationRunner(
             ApplicationContext springContext,
             MongoTemplate mongoTemplate,
             ApplicationEventPublisher eventPublisher) {
 
-        return ChangockSpring5.builder()
+        return MongockSpring5.builder()
                 .setDriver(SpringDataMongoV3Driver.withDefaultLock(mongoTemplate))
                 .addChangeLogClass(com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.ClientUpdater2ChangeLog.class)
                 .addChangeLogsScanPackage("com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.initializer")
