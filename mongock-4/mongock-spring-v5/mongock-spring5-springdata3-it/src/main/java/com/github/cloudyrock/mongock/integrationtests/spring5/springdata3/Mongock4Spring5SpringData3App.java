@@ -57,7 +57,7 @@ public class Mongock4Spring5SpringData3App {
      */
     @Bean
     @ConditionalOnMissingBean(MongockSpring5.MongockApplicationRunner.class)
-    @ConditionalOnExpression("${mongock.enabled:true} && ${changock.enabled:true}")
+    @ConditionalOnExpression("${mongock.enabled:true}")
     public MongockSpring5.MongockApplicationRunner mongockApplicationRunner(
             ApplicationContext springContext,
             MongoTemplate mongoTemplate,
