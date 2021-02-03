@@ -7,6 +7,11 @@ import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.spring
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.spring.ZonedDateTimeToDateConverter;
 import com.github.cloudyrock.spring.v5.EnableMongock;
 import com.github.cloudyrock.spring.v5.MongockSpring5;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.WriteConcern;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -18,6 +23,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.WriteConcernResolver;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.test.context.ActiveProfiles;
@@ -51,9 +57,11 @@ public class Mongock4Spring5SpringData3App {
     @Bean
     @ConditionalOnExpression("${mongock.transactionable:false}")
     MongoTransactionManager transactionManager(MongoTemplate mongoTemplate) {
+        //creating the collection in advance is required, because cannot be created during a transaction
         mongoTemplate.createCollection("clientCollection");
         return new MongoTransactionManager(mongoTemplate.getMongoDbFactory());
     }
+
 
     /**
      * This method has been modified in order to use Changock runner instead of Mongock(deprecated).
