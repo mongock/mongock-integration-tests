@@ -24,7 +24,7 @@ abstract class ApplicationRunnerTestBase {
 
     protected SpringDataMongoV3Driver buildDriver() {
         SpringDataMongoV3Driver driver = SpringDataMongoV3Driver.withDefaultLock(mongoTemplate);
-        driver.setChangeLogCollectionName(Constants.CHANGELOG_COLLECTION_NAME);
+        driver.setChangeLogRepositoryName(Constants.CHANGELOG_COLLECTION_NAME);
         return driver;
     }
 

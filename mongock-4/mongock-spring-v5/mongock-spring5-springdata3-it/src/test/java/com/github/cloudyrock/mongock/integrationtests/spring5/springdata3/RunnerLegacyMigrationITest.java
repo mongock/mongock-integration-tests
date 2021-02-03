@@ -1,9 +1,9 @@
 package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3;
 
+import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.empty.EmptyChangeLog;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.util.Constants;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.util.LegacyMigrationUtils;
-import com.github.cloudyrock.mongock.migration.MongoDbLegacyMigration;
 import com.github.cloudyrock.spring.v5.MongockSpring5;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
@@ -56,7 +56,7 @@ class RunnerLegacyMigrationITest extends ApplicationRunnerTestBase {
 //        String packageName = runAlways
 //                ? MongockSync4LegacyMigrationChangeRunAlwaysLog.class.getPackage().getName()
 //                : MongockSync4LegacyMigrationChangeLog.class.getPackage().getName();
-        MongoDbLegacyMigration legacyMigration = new MongoDbLegacyMigration(LegacyMigrationUtils.LEGACY_CHANGELOG_COLLECTION_NAME);
+        LegacyMigration legacyMigration = new LegacyMigration(LegacyMigrationUtils.LEGACY_CHANGELOG_COLLECTION_NAME);
         legacyMigration.setRunAlways(runAlways);
         MongockSpring5.MongockApplicationRunner runner = getBasicBuilder(EmptyChangeLog.class.getPackage().getName())
                 .setLegacyMigration(legacyMigration)

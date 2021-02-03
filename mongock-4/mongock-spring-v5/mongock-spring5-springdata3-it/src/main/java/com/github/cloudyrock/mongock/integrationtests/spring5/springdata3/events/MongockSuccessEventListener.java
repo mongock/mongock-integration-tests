@@ -1,6 +1,6 @@
 package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.events;
 
-import io.changock.runner.spring.util.events.SpringMigrationSuccessEvent;
+import com.github.cloudyrock.spring.util.events.SpringMigrationSuccessEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 

@@ -1,20 +1,15 @@
 package com.github.cloudyrock.mongock.integrationtests.spring5.springdata3;
 
+import com.github.cloudyrock.mongock.exception.MongockException;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.initializer.ClientInitializerChangeLog;
-import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.empty.EmptyChangeLog;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.transaction.commitNonFailFast.CommitNonFailFastChangeLog;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.transaction.rollback.RollbackChangeLog;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.transaction.successful.TransactionSuccessfulChangeLog;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.client.ClientRepository;
-import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.util.Constants;
-import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.util.LegacyMigrationUtils;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.util.MongoContainer;
 import com.github.cloudyrock.spring.v5.MongockSpring5;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import io.changock.migration.api.exception.ChangockException;
-import io.changock.runner.spring.v5.SpringApplicationRunner;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -61,7 +56,7 @@ class SpringApplicationITest {
     @ValueSource(strings = {"mongo:4.2.6"})
     void ApplicationRunnerShouldBeInjected(String mongoVersion) {
         ctx = RuntimeTestUtil.startSpringAppWithMongoDbVersionAndDefaultPackage(mongoVersion);
-        ctx.getBean(SpringApplicationRunner.class);
+        ctx.getBean(MongockSpring5.MongockApplicationRunner.class);
     }
 
 
@@ -69,15 +64,15 @@ class SpringApplicationITest {
     @ValueSource(strings = {"mongo:4.2.6"})
     void ApplicationRunnerShouldNotBeInjected_IfDisabledByProperties(String mongoVersion) {
         Map<String, String> parameters = new HashMap<>();
-        parameters.put("changock.enabled", "false");
-        parameters.put("changock.changeLogsScanPackage", "com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client");
-        parameters.put("changock.transactionable", "false");
+        parameters.put("mongock.enabled", "false");
+        parameters.put("mongock.changeLogsScanPackage", "com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client");
+        parameters.put("mongock.transactionable", "false");
         ctx = RuntimeTestUtil.startSpringAppWithMongoDbVersionAndParameters(mongoVersion, parameters);
         Exception ex = assertThrows(
                 NoSuchBeanDefinitionException.class,
-                () -> ctx.getBean(SpringApplicationRunner.class));
+                () -> ctx.getBean(MongockSpring5.MongockApplicationRunner.class));
         assertEquals(
-                "No qualifying bean of type 'io.changock.runner.spring.v5.SpringApplicationRunner' available",
+                "No qualifying bean of type 'com.github.cloudyrock.spring.v5.MongockSpring5$MongockApplicationRunner' available",
                 ex.getMessage()
         );
     }
@@ -103,7 +98,7 @@ class SpringApplicationITest {
         Exception ex = assertThrows(
                 IllegalStateException.class,
                 () -> RuntimeTestUtil.startSpringAppWithMongoDbVersionAndNoPackage(mongoVersion));
-        assertEquals(ChangockException.class, ex.getCause().getClass());
+        assertEquals(MongockException.class, ex.getCause().getClass());
         assertEquals("Scan package for changeLogs is not set: use appropriate setter", ex.getCause().getMessage());
     }
 
@@ -114,7 +109,7 @@ class SpringApplicationITest {
         MongoCollection clientsCollection = MongoClients.create(mongoContainer.getReplicaSetUrl()).getDatabase(RuntimeTestUtil.DEFAULT_DATABASE_NAME).getCollection(CLIENTS_COLLECTION_NAME);
         try {
             Map<String, String> parameters = new HashMap<>();
-            parameters.put("changock.changeLogsScanPackage",  RollbackChangeLog.class.getPackage().getName());
+            parameters.put("mongock.changeLogsScanPackage", RollbackChangeLog.class.getPackage().getName());
             ctx = RuntimeTestUtil.startSpringAppWithParameters(mongoContainer, parameters);
         } catch (Exception ex) {
             //ignore
@@ -151,8 +146,6 @@ class SpringApplicationITest {
         // then
         assertEquals(10, ctx.getBean(ClientRepository.class).count());
     }
-
-
 
 
 }
