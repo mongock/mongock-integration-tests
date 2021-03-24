@@ -6,4 +6,4 @@ mongock:
 
   #    - com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.initializer2
   #    - com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.updater
-  #    - com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.client.ClientUpdater2ChangeLog
+  #    - ClientUpdater2ChangeLog

@@ -1,0 +1,30 @@
+package com.github.cloudyrock.mongock.integrationtests.changelogs.transaction.successful;
+
+import com.github.cloudyrock.mongock.ChangeLog;
+import com.github.cloudyrock.mongock.ChangeSet;
+import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.decorator.impl.MongockTemplate;
+import com.github.cloudyrock.mongock.integrationtests.App;
+import com.github.cloudyrock.mongock.integrationtests.client.Client;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+@ChangeLog(order = "2")
+public class TransactionSuccessfulChangeLog {
+
+    @ChangeSet(id = "method-successful", order = "001", author = "mongock")
+    public void methodSuccessful(MongockTemplate template) {
+        List<Client> clients = IntStream.range(0, 10)
+                .mapToObj(i -> new Client("name-" + i, "email-" + i, "phone" + i, "country" + i))
+                .collect(Collectors.toList());
+        Collection<Client> result = template.insert(clients, App.CLIENTS_COLLECTION_NAME);
+    }
+
+    @ChangeSet(id = "method-failing", order = "002", author = "mongock")
+    public void methodFailing(MongockTemplate template) {
+    }
+
+
+}
