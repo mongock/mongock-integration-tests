@@ -74,7 +74,7 @@ class SpringApplicationITest {
                 NoSuchBeanDefinitionException.class,
                 () -> ctx.getBean(MongockSpringbootV2_2.MongockApplicationRunner.class));
         assertEquals(
-                "No qualifying bean of type 'com.github.cloudyrock.spring.v5.MongockSpringbootV2_2$MongockApplicationRunner' available",
+                "No qualifying bean of type 'com.github.cloudyrock.springboot.v2_2.MongockSpringbootV2_2$MongockApplicationRunner' available",
                 ex.getMessage()
         );
     }
@@ -89,7 +89,7 @@ class SpringApplicationITest {
                 () -> ctx.getBean(MongockSpringbootV2_2.MongockInitializingBeanRunner.class),
                 "MongockInitializingBeanRunner should not be injected to the context as runner-type is not set");
         assertEquals(
-                "No qualifying bean of type 'com.github.cloudyrock.spring.v5.MongockSpringbootV2_2$MongockInitializingBeanRunner' available",
+                "No qualifying bean of type 'com.github.cloudyrock.springboot.v2_2.MongockSpringbootV2_2$MongockInitializingBeanRunner' available",
                 ex.getMessage()
         );
     }
@@ -101,7 +101,7 @@ class SpringApplicationITest {
                 IllegalStateException.class,
                 () -> RuntimeTestUtil.startSpringAppWithMongoDbVersionAndNoPackage(mongoVersion));
         assertEquals(MongockException.class, ex.getCause().getClass());
-        assertEquals("Scan package for changeLogs is not set: use appropriate setter", ex.getCause().getMessage());
+        assertEquals("changeLogsScanPackage must be injected to Mongock builder", ex.getCause().getMessage());
     }
 
     @ParameterizedTest
