@@ -6,7 +6,7 @@
 
     <groupId>com.github.cloudyrock.mongock.it</groupId>
     <artifactId>mongock-integration-tests</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
@@ -30,7 +30,7 @@
             <dependency>
                 <groupId>com.github.cloudyrock.mongock</groupId>
                 <artifactId>mongock-bom</artifactId>
-                <version>4.3.0</version>
+                <version>4.3.7</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
