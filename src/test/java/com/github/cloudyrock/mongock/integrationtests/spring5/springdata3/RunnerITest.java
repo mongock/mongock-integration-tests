@@ -105,7 +105,7 @@ class RunnerITest extends ApplicationRunnerTestBase{
                 .find(new Document().append("changeSetMethod", "testChangeSetWithAlways").append("state", "EXECUTED"))
                 .forEach(documentList::add);
 
-        assertEquals(2, documentList.size());
+        assertEquals(1, documentList.size());
 
     }
 
