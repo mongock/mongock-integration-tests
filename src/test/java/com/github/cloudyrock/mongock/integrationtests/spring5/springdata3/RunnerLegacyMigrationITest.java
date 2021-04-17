@@ -4,7 +4,7 @@ import com.github.cloudyrock.mongock.config.LegacyMigration;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.empty.EmptyChangeLog;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.util.Constants;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.util.LegacyMigrationUtils;
-import com.github.cloudyrock.spring.v5.MongockSpring5;
+import com.github.cloudyrock.springboot.v2_2.MongockSpringbootV2_4;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,7 +16,7 @@ class RunnerLegacyMigrationITest extends ApplicationRunnerTestBase {
 
     @ParameterizedTest
     @ValueSource(strings = {"mongo:4.2.6"})
-    void shouldPerformLegacyMigration(String mongoVersion) {
+    void shouldPerformLegacyMigration(String mongoVersion) throws Exception {
         start(mongoVersion);
         // given, then
         runRunnerWithLegacyMigration(1, false);
@@ -29,7 +29,7 @@ class RunnerLegacyMigrationITest extends ApplicationRunnerTestBase {
 
     @ParameterizedTest
     @ValueSource(strings = {"mongo:4.2.6"})
-    void shouldNotReapplyLegacyChangeLogs_IfNotRunAlways_WhenExecutedTwice(String mongoVersion) {
+    void shouldNotReapplyLegacyChangeLogs_IfNotRunAlways_WhenExecutedTwice(String mongoVersion) throws Exception {
         start(mongoVersion);
         // given, then
         runRunnerWithLegacyMigration(2, false);
@@ -41,7 +41,7 @@ class RunnerLegacyMigrationITest extends ApplicationRunnerTestBase {
 
     @ParameterizedTest
     @ValueSource(strings = {"mongo:4.2.6"})
-    void shouldNotDuplicateLegacyChangeLogs_IfRunAlways_WhenLegacyMigrationReapplied(String mongoVersion) {
+    void shouldNotDuplicateLegacyChangeLogs_IfRunAlways_WhenLegacyMigrationReapplied(String mongoVersion) throws Exception {
         start(mongoVersion);
         // given, then
         runRunnerWithLegacyMigration(2, true);
@@ -50,7 +50,7 @@ class RunnerLegacyMigrationITest extends ApplicationRunnerTestBase {
         LegacyMigrationUtils.checkLegacyMigration(mongoTemplate.getDb().getCollection(Constants.CHANGELOG_COLLECTION_NAME), true, 1);
     }
 
-    private void runRunnerWithLegacyMigration(int executions, boolean runAlways) {
+    private void runRunnerWithLegacyMigration(int executions, boolean runAlways) throws Exception {
         MongoCollection<Document> collection = mongoTemplate.getCollection(LegacyMigrationUtils.LEGACY_CHANGELOG_COLLECTION_NAME);
         LegacyMigrationUtils.setUpLegacyMigration(collection);
 //        String packageName = runAlways
@@ -58,12 +58,12 @@ class RunnerLegacyMigrationITest extends ApplicationRunnerTestBase {
 //                : MongockSync4LegacyMigrationChangeLog.class.getPackage().getName();
         LegacyMigration legacyMigration = new LegacyMigration(LegacyMigrationUtils.LEGACY_CHANGELOG_COLLECTION_NAME);
         legacyMigration.setRunAlways(runAlways);
-        MongockSpring5.MongockApplicationRunner runner = getBasicBuilder(EmptyChangeLog.class.getPackage().getName())
+        MongockSpringbootV2_4.MongockApplicationRunner runner = getBasicBuilder(EmptyChangeLog.class.getPackage().getName())
                 .setLegacyMigration(legacyMigration)
                 .buildApplicationRunner();
 
         for (int i = 0; i < executions; i++) {
-            runner.execute();
+            runner.run(null);
         }
     }
 
