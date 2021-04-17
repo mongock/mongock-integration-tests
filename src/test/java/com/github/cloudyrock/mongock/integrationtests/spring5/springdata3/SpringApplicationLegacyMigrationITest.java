@@ -84,7 +84,7 @@ class SpringApplicationLegacyMigrationITest {
     @ParameterizedTest
     @ValueSource(strings = {"mongo:4.2.6"})
     void shouldRunLegacyMigration_IfRunAlways_WhenItIsAlreadyExecuted(String mongoDbVersion) {
-        runLegacyMigrationWhenPreviouslyExecuted(mongoDbVersion, true, 2);
+        runLegacyMigrationWhenPreviouslyExecuted(mongoDbVersion, true, 1);
     }
 
     private void runLegacyMigrationWhenPreviouslyExecuted(String mongoDbVersion, boolean runAlways, int executions) {
