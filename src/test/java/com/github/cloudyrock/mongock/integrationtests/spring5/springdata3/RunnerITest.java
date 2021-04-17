@@ -4,7 +4,7 @@ import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.change
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.general.MongockTestResource;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.changelogs.withChangockAnnotations.ChangeLogwithChangockAnnotations;
 import com.github.cloudyrock.mongock.integrationtests.spring5.springdata3.util.Constants;
-import com.github.cloudyrock.spring.v5.MongockSpring5;
+import com.github.cloudyrock.springboot.v2_2.MongockSpringbootV2_4;
 import org.bson.Document;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -26,30 +26,10 @@ class RunnerITest extends ApplicationRunnerTestBase{
 
     @ParameterizedTest
     @ValueSource(strings = {"mongo:4.2.6"})
-    void shouldBuildInitializingBeanRunner(String mongoVersion) {
-        start(mongoVersion);
-        // given
-        assertEquals(
-                MongockSpring5.MongockApplicationRunner.class,
-                getBasicBuilder(TEST_RESOURCE_CLASSPATH).buildApplicationRunner().getClass());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"mongo:4.2.6"})
-    void shouldBuildApplicationRunner(String mongoVersion) {
-        start(mongoVersion);
-        // given
-        assertEquals(
-                MongockSpring5.MongockInitializingBeanRunner.class,
-                getBasicBuilder(TEST_RESOURCE_CLASSPATH).buildInitializingBeanRunner().getClass());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"mongo:4.2.6"})
-    void shouldExecuteAllChangeSets(String mongoVersion) {
+    void shouldExecuteAllChangeSets(String mongoVersion) throws Exception {
         start(mongoVersion);
         // given, then
-        getBasicBuilder(TEST_RESOURCE_CLASSPATH).buildApplicationRunner().execute();
+        getBasicBuilder(TEST_RESOURCE_CLASSPATH).buildApplicationRunner().run(null);
 
         // db changelog collection checking
         long change1 = this.mongoTemplate.getDb().getCollection(Constants.CHANGELOG_COLLECTION_NAME)
@@ -59,7 +39,7 @@ class RunnerITest extends ApplicationRunnerTestBase{
 
     @ParameterizedTest
     @ValueSource(strings = {"mongo:4.2.6"})
-    void shouldStoreMetadata_WhenChangeSetIsTrack_IfAddedInBuilder(String mongoVersion) {
+    void shouldStoreMetadata_WhenChangeSetIsTrack_IfAddedInBuilder(String mongoVersion) throws Exception {
         start(mongoVersion);
         // given
         Map<String, Object> metadata = new HashMap<>();
@@ -74,7 +54,7 @@ class RunnerITest extends ApplicationRunnerTestBase{
         getBasicBuilder(TEST_RESOURCE_CLASSPATH)
                 .withMetadata(metadata)
                 .buildApplicationRunner()
-                .execute();
+                .run(null);
 
         // then
         Map metadataResult = mongoTemplate.getDb().getCollection(Constants.CHANGELOG_COLLECTION_NAME).find().first().get("metadata", Map.class);
@@ -89,14 +69,14 @@ class RunnerITest extends ApplicationRunnerTestBase{
 
     @ParameterizedTest
     @ValueSource(strings = {"mongo:4.2.6"})
-    void shouldTwoExecutedChangeSet_whenRunningTwice_ifRunAlways(String mongoVersion) {
+    void shouldTwoExecutedChangeSet_whenRunningTwice_ifRunAlways(String mongoVersion) throws Exception {
         start(mongoVersion);
         // given
-        MongockSpring5.MongockApplicationRunner runner = getBasicBuilder(TEST_RESOURCE_CLASSPATH).buildApplicationRunner();
+        MongockSpringbootV2_4.MongockApplicationRunner runner = getBasicBuilder(TEST_RESOURCE_CLASSPATH).buildApplicationRunner();
 
         // when
-        runner.execute();
-        runner.execute();
+        runner.run(null);
+        runner.run(null);
 
         // then
         List<Document> documentList = new ArrayList<>();
@@ -111,17 +91,17 @@ class RunnerITest extends ApplicationRunnerTestBase{
 
     @ParameterizedTest
     @ValueSource(strings = {"mongo:4.2.6"})
-    void shouldOneExecutedAndOneIgnoredChangeSet_whenRunningTwice_ifNotRunAlwaysAndTrackIgnore(String mongoVersion) {
+    void shouldOneExecutedAndOneIgnoredChangeSet_whenRunningTwice_ifNotRunAlwaysAndTrackIgnore(String mongoVersion) throws Exception {
         start(mongoVersion);
         // given
-        MongockSpring5.MongockApplicationRunner runner = getBasicBuilder(TEST_RESOURCE_CLASSPATH)
+        MongockSpringbootV2_4.MongockApplicationRunner runner = getBasicBuilder(TEST_RESOURCE_CLASSPATH)
                 .setTrackIgnored(true)
                 .buildApplicationRunner();
 
 
         // when
-        runner.execute();
-        runner.execute();
+        runner.run(null);
+        runner.run(null);
 
         // then
         List<String> stateList = new ArrayList<>();
@@ -139,16 +119,16 @@ class RunnerITest extends ApplicationRunnerTestBase{
 
     @ParameterizedTest
     @ValueSource(strings = {"mongo:4.2.6"})
-    void shouldOneExecutedAndNoIgnoredChangeSet_whenRunningTwice_ifNotRunAlwaysAndNotTrackIgnore(String mongoVersion) {
+    void shouldOneExecutedAndNoIgnoredChangeSet_whenRunningTwice_ifNotRunAlwaysAndNotTrackIgnore(String mongoVersion) throws Exception {
         start(mongoVersion);
         // given
-        MongockSpring5.MongockApplicationRunner runner = getBasicBuilder(TEST_RESOURCE_CLASSPATH)
+        MongockSpringbootV2_4.MongockApplicationRunner runner = getBasicBuilder(TEST_RESOURCE_CLASSPATH)
                 .buildApplicationRunner();
 
 
         // when
-        runner.execute();
-        runner.execute();
+        runner.run(null);
+        runner.run(null);
 
         // then
         List<String> stateList = new ArrayList<>();
@@ -165,10 +145,10 @@ class RunnerITest extends ApplicationRunnerTestBase{
 
     @ParameterizedTest
     @ValueSource(strings = {"mongo:4.2.6"})
-    void shouldExecuteChangockAnnotations(String mongoVersion) {
+    void shouldExecuteChangockAnnotations(String mongoVersion) throws Exception {
         start(mongoVersion);
         // given, then
-        getBasicBuilder(ChangeLogwithChangockAnnotations.class.getPackage().getName()).buildApplicationRunner().execute();
+        getBasicBuilder(ChangeLogwithChangockAnnotations.class.getPackage().getName()).buildApplicationRunner().run(null);
 
         // then
         long changeWithChangockAnnotations = mongoTemplate.getDb().getCollection(Constants.CHANGELOG_COLLECTION_NAME).countDocuments(new Document()
