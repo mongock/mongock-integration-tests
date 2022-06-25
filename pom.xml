@@ -16,7 +16,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
-        <mongodb.spring-data.v3.version>3.0.6.RELEASE</mongodb.spring-data.v3.version>
+        <mongodb.spring-data.v3.version>3.3.5</mongodb.spring-data.v3.version>
         <mongodb.driver-sync.version>4.0.5</mongodb.driver-sync.version>
         
         <junit.version>4.13</junit.version>
